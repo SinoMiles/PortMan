@@ -122,6 +122,18 @@ body {
   border-radius: 6px;
   margin-left: 4px;
   border: 1px solid rgba(255,255,255,0.2);
+  outline: none; /* 移除默认的焦点边框 */
+}
+
+.titlebar-btn:focus {
+  outline: none !important; /* 确保焦点时也没有边框 */
+  box-shadow: none !important; /* 移除可能的焦点阴影 */
+  border: 1px solid rgba(255,255,255,0.2) !important; /* 保持原有边框 */
+}
+
+.titlebar-btn:active {
+  outline: none !important; /* 点击时也没有边框 */
+  box-shadow: none !important;
 }
 
 .titlebar-btn:hover {
@@ -198,6 +210,12 @@ body {
   transition: all 0.3s ease;
   position: relative;
   overflow: hidden;
+  outline: none; /* 移除默认焦点边框 */
+}
+
+.btn:focus {
+  outline: none !important;
+  box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.3) !important; /* 自定义焦点样式 */
 }
 
 .btn:hover {
@@ -275,9 +293,9 @@ body {
 }
 
 .search-input:focus, .protocol-filter:focus {
-  border-color: #667eea;
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
-  outline: none;
+  border-color: #667eea !important;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2) !important;
+  outline: none !important;
 }
 
 .protocol-filter option {
