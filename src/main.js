@@ -52,6 +52,70 @@ function createWindow() {
             height: 100vh;
             overflow: hidden;
           }
+
+          /* 自定义滚动条样式 - 统一UI风格 */
+          ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+          }
+
+          ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            margin: 2px;
+            box-shadow: inset 0 0 3px rgba(0, 0, 0, 0.1);
+          }
+
+          ::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.7), rgba(118, 75, 162, 0.7));
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+          }
+
+          ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.9), rgba(118, 75, 162, 0.9));
+            transform: scale(1.1);
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
+          }
+
+          ::-webkit-scrollbar-thumb:active {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            transform: scale(1.05);
+          }
+
+          ::-webkit-scrollbar-corner {
+            background: transparent;
+          }
+
+          /* 为表格容器特别优化的滚动条 */
+          .table-container::-webkit-scrollbar {
+            width: 10px;
+            height: 10px;
+          }
+
+          .table-container::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 12px;
+            margin: 4px;
+            border: 1px solid rgba(102, 126, 234, 0.1);
+          }
+
+          .table-container::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.8), rgba(118, 75, 162, 0.8));
+            border-radius: 12px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+          }
+
+          .table-container::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+          }
+
+
           .app-container {
             height: 100vh;
             display: flex;
@@ -128,6 +192,30 @@ function createWindow() {
             flex: 1;
             padding: 20px;
             overflow-y: auto;
+          }
+
+          /* 主内容区域滚动条样式 */
+          .main-content::-webkit-scrollbar {
+            width: 8px;
+          }
+
+          .main-content::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            margin: 4px;
+          }
+
+          .main-content::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.6), rgba(118, 75, 162, 0.6));
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+          }
+
+          .main-content::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.8), rgba(118, 75, 162, 0.8));
+            transform: scale(1.1);
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
           }
           .card {
             background: rgba(255,255,255,0.95);
