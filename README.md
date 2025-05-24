@@ -13,6 +13,8 @@
 
 **一个现代化的跨平台端口管理工具，提供直观的图形界面来查看和管理系统端口使用情况**
 
+[![Build Status](https://github.com/SinoMiles/PortMan/actions/workflows/build.yml/badge.svg)](https://github.com/SinoMiles/PortMan/actions)
+
 [English](#english) | [中文](#中文)
 
 </div>
