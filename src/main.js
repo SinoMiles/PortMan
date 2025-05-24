@@ -22,12 +22,14 @@ function createWindow() {
     },
     icon: path.join(__dirname, '../assets/icon.png'),
     frame: false, // 隐藏默认标题栏
-    show: false,
+    show: false, // 初始隐藏窗口，避免闪烁
     autoHideMenuBar: true, // 自动隐藏菜单栏
     menuBarVisible: false,  // 菜单栏不可见
     backgroundColor: '#667eea', // 设置背景色避免白屏闪烁
     webSecurity: false, // 允许加载本地资源
-    titleBarOverlay: false // 禁用标题栏覆盖
+    titleBarOverlay: false, // 禁用标题栏覆盖
+    paintWhenInitiallyHidden: false, // 初始隐藏时不绘制
+    skipTaskbar: false
   });
 
   // 直接使用内联 HTML 内容
@@ -56,7 +58,10 @@ function createWindow() {
           /* 自定义滚动条样式 - 统一UI风格 */
           ::-webkit-scrollbar {
             width: 8px;
-            height: 8px;
+          }
+
+          ::-webkit-scrollbar:horizontal {
+            display: none; /* 隐藏横向滚动条 */
           }
 
           ::-webkit-scrollbar-track {
@@ -92,7 +97,10 @@ function createWindow() {
           /* 为表格容器特别优化的滚动条 */
           .table-container::-webkit-scrollbar {
             width: 10px;
-            height: 10px;
+          }
+
+          .table-container::-webkit-scrollbar:horizontal {
+            display: none; /* 隐藏表格横向滚动条 */
           }
 
           .table-container::-webkit-scrollbar-track {
@@ -269,6 +277,7 @@ function createWindow() {
           .table-container {
             flex: 1;
             overflow-y: auto;
+            overflow-x: hidden; /* 禁用横向滚动 */
             border-radius: 12px;
             border: 2px solid rgba(44, 62, 80, 0.1);
             /* 性能优化 - 简化滚动 */
@@ -639,13 +648,28 @@ function createWindow() {
 
   mainWindow.loadURL('data:text/html;charset=utf-8,' + encodeURIComponent(simpleHTML));
 
-  // 开发模式下打开开发者工具
-  if (process.env.NODE_ENV === 'development') {
-    mainWindow.webContents.openDevTools();
-  }
+  // 总是打开开发者工具以便调试
+  mainWindow.webContents.openDevTools();
 
-  mainWindow.once('ready-to-show', () => {
-    mainWindow.show();
+  // 优化窗口显示时机，减少闪烁
+  mainWindow.webContents.once('dom-ready', () => {
+    // DOM 准备就绪后稍微延迟显示，确保样式完全加载
+    setTimeout(() => {
+      // 添加平滑显示效果
+      mainWindow.setOpacity(0);
+      mainWindow.show();
+
+      // 淡入动画
+      let opacity = 0;
+      const fadeIn = setInterval(() => {
+        opacity += 0.05;
+        mainWindow.setOpacity(opacity);
+        if (opacity >= 1) {
+          clearInterval(fadeIn);
+          mainWindow.setOpacity(1); // 确保完全不透明
+        }
+      }, 16); // 约60fps
+    }, 200); // 延迟200ms确保样式加载完成
   });
 
   mainWindow.on('closed', () => {
