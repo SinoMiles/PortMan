@@ -21,12 +21,13 @@ function createWindow() {
       preload: path.join(__dirname, 'preload.js')
     },
     icon: path.join(__dirname, '../assets/icon.png'),
-    titleBarStyle: 'default',
+    frame: false, // 隐藏默认标题栏
     show: false,
     autoHideMenuBar: true, // 自动隐藏菜单栏
     menuBarVisible: false,  // 菜单栏不可见
     backgroundColor: '#667eea', // 设置背景色避免白屏闪烁
-    webSecurity: false // 允许加载本地资源
+    webSecurity: false, // 允许加载本地资源
+    titleBarOverlay: false // 禁用标题栏覆盖
   });
 
   // 直接使用内联 HTML 内容
@@ -55,6 +56,66 @@ function createWindow() {
             height: 100vh;
             display: flex;
             flex-direction: column;
+          }
+
+          /* 自定义标题栏样式 */
+          .custom-titlebar {
+            background: rgba(255,255,255,0.2);
+            height: 32px;
+            display: flex;
+            align-items: center;
+            -webkit-app-region: drag; /* 允许拖拽窗口 */
+            user-select: none;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+          }
+
+          .titlebar-content {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 12px;
+          }
+
+          .titlebar-title {
+            font-size: 13px;
+            font-weight: 500;
+            color: rgba(255,255,255,0.9);
+          }
+
+          .titlebar-controls {
+            display: flex;
+            -webkit-app-region: no-drag; /* 按钮区域不允许拖拽 */
+          }
+
+          .titlebar-btn {
+            width: 32px;
+            height: 32px;
+            border: none;
+            background: transparent;
+            color: rgba(255,255,255,0.8);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.2s ease;
+          }
+
+          .titlebar-btn:hover {
+            background: rgba(255,255,255,0.1);
+          }
+
+          .close-btn:hover {
+            background: #e74c3c !important;
+            color: white;
+          }
+
+          .minimize-btn:hover {
+            background: rgba(255,255,255,0.15);
+          }
+
+          .maximize-btn:hover {
+            background: rgba(255,255,255,0.15);
           }
           .header {
             background: rgba(255,255,255,0.15);
@@ -211,9 +272,35 @@ function createWindow() {
       </head>
       <body>
         <div class="app-container">
+          <!-- 自定义标题栏 -->
+          <div class="custom-titlebar">
+            <div class="titlebar-content">
+              <div class="titlebar-title">
+                🚀 PortMan - 端口管理工具
+              </div>
+              <div class="titlebar-controls">
+                <button class="titlebar-btn minimize-btn" onclick="minimizeWindow()" title="最小化">
+                  <svg width="12" height="12" viewBox="0 0 12 12">
+                    <rect x="2" y="5" width="8" height="2" fill="currentColor"/>
+                  </svg>
+                </button>
+                <button class="titlebar-btn maximize-btn" onclick="toggleMaximize()" title="最大化/还原">
+                  <svg width="12" height="12" viewBox="0 0 12 12">
+                    <rect x="2" y="2" width="8" height="8" stroke="currentColor" stroke-width="1" fill="none"/>
+                  </svg>
+                </button>
+                <button class="titlebar-btn close-btn" onclick="closeWindow()" title="关闭">
+                  <svg width="12" height="12" viewBox="0 0 12 12">
+                    <path d="M2 2 L10 10 M10 2 L2 10" stroke="currentColor" stroke-width="1.5"/>
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+
           <div class="header">
             <div class="title">
-              🚀 PortMan
+              🔌 端口管理
             </div>
             <div class="header-actions">
               <button onclick="refreshPorts()" class="btn btn-primary">🔄 刷新</button>
@@ -264,6 +351,25 @@ function createWindow() {
             console.log('页面加载完成，准备获取端口信息...');
             setTimeout(refreshPorts, 1000);
           });
+
+          // 窗口控制函数
+          async function minimizeWindow() {
+            if (window.electronAPI && window.electronAPI.windowControls) {
+              await window.electronAPI.windowControls.minimize();
+            }
+          }
+
+          async function toggleMaximize() {
+            if (window.electronAPI && window.electronAPI.windowControls) {
+              await window.electronAPI.windowControls.maximize();
+            }
+          }
+
+          async function closeWindow() {
+            if (window.electronAPI && window.electronAPI.windowControls) {
+              await window.electronAPI.windowControls.close();
+            }
+          }
 
           async function refreshPorts() {
             const portList = document.getElementById('portList');
@@ -476,6 +582,39 @@ ipcMain.handle('get-system-info', async () => {
     totalMemory: os.totalmem(),
     freeMemory: os.freemem()
   };
+});
+
+// IPC 处理程序 - 窗口控制
+ipcMain.handle('window-minimize', () => {
+  if (mainWindow) {
+    mainWindow.minimize();
+  }
+});
+
+ipcMain.handle('window-maximize', () => {
+  if (mainWindow) {
+    if (mainWindow.isMaximized()) {
+      mainWindow.unmaximize();
+    } else {
+      mainWindow.maximize();
+    }
+  }
+});
+
+ipcMain.handle('window-unmaximize', () => {
+  if (mainWindow) {
+    mainWindow.unmaximize();
+  }
+});
+
+ipcMain.handle('window-close', () => {
+  if (mainWindow) {
+    mainWindow.close();
+  }
+});
+
+ipcMain.handle('window-is-maximized', () => {
+  return mainWindow ? mainWindow.isMaximized() : false;
 });
 
 // 获取端口信息的函数
