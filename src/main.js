@@ -24,7 +24,9 @@ function createWindow() {
     titleBarStyle: 'default',
     show: false,
     autoHideMenuBar: true, // 自动隐藏菜单栏
-    menuBarVisible: false  // 菜单栏不可见
+    menuBarVisible: false,  // 菜单栏不可见
+    backgroundColor: '#667eea', // 设置背景色避免白屏闪烁
+    webSecurity: false // 允许加载本地资源
   });
 
   // 直接使用内联 HTML 内容
@@ -55,8 +57,7 @@ function createWindow() {
             flex-direction: column;
           }
           .header {
-            background: rgba(255,255,255,0.1);
-            backdrop-filter: blur(10px);
+            background: rgba(255,255,255,0.15);
             border-bottom: 1px solid rgba(255,255,255,0.2);
             padding: 15px 20px;
             display: flex;
@@ -81,8 +82,7 @@ function createWindow() {
             overflow-y: auto;
           }
           .card {
-            background: rgba(255,255,255,0.1);
-            backdrop-filter: blur(10px);
+            background: rgba(255,255,255,0.12);
             border-radius: 12px;
             padding: 20px;
             border: 1px solid rgba(255,255,255,0.2);
@@ -112,13 +112,10 @@ function createWindow() {
             cursor: pointer;
             font-size: 13px;
             font-weight: 500;
-            transition: all 0.3s ease;
-            backdrop-filter: blur(10px);
             border: 1px solid rgba(255,255,255,0.3);
           }
           .btn:hover {
             background: rgba(255,255,255,0.3);
-            transform: translateY(-1px);
           }
           .btn-primary {
             background: #667eea;
@@ -132,39 +129,37 @@ function createWindow() {
             overflow-y: auto;
             border-radius: 8px;
             border: 1px solid rgba(255,255,255,0.2);
-            /* 性能优化 */
-            will-change: scroll-position;
-            transform: translateZ(0);
-            -webkit-overflow-scrolling: touch;
+            /* 性能优化 - 简化滚动 */
+            contain: layout style paint;
+            transform: translate3d(0,0,0);
           }
           .table {
             width: 100%;
-            border-collapse: collapse;
+            border-collapse: separate;
+            border-spacing: 0;
             font-size: 13px;
-            /* 性能优化 */
             table-layout: fixed;
           }
           .table th {
-            background: rgba(255,255,255,0.2);
-            padding: 8px 6px;
+            background: rgba(255,255,255,0.25);
+            padding: 10px 8px;
             border-bottom: 1px solid rgba(255,255,255,0.3);
             font-weight: 600;
             text-align: left;
             position: sticky;
             top: 0;
             z-index: 10;
-            /* 性能优化 */
-            will-change: transform;
           }
           .table td {
-            padding: 6px;
+            padding: 8px;
             border-bottom: 1px solid rgba(255,255,255,0.1);
-            background: rgba(255,255,255,0.05);
-            /* 性能优化 */
-            will-change: auto;
+            background: rgba(255,255,255,0.08);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
           }
-          .table tr:hover td {
-            background: rgba(255,255,255,0.1);
+          .table tbody tr:hover td {
+            background: rgba(255,255,255,0.15);
           }
           /* 列宽优化 */
           .table th:nth-child(1), .table td:nth-child(1) { width: 8%; }
@@ -304,7 +299,7 @@ function createWindow() {
           let allPorts = [];
           let filteredPorts = [];
           let currentPage = 0;
-          const itemsPerPage = 50; // 每页显示50条记录
+          const itemsPerPage = 25; // 每页显示25条记录，提升滑动性能
 
           function displayPorts(ports) {
             const portList = document.getElementById('portList');
@@ -326,40 +321,49 @@ function createWindow() {
             const endIndex = Math.min(startIndex + itemsPerPage, filteredPorts.length);
             const currentPorts = filteredPorts.slice(startIndex, endIndex);
 
-            let html = '<table class="table">';
+            // 使用更简单的渲染方式
+            let html = '<table class="table"><thead>';
             html += '<tr><th>协议</th><th>本地地址</th><th>远程地址</th><th>状态</th><th>PID</th><th>进程名</th><th>操作</th></tr>';
+            html += '</thead><tbody>';
 
-            // 使用 DocumentFragment 提升性能
-            currentPorts.forEach(port => {
+            // 简化渲染逻辑
+            for (let i = 0; i < currentPorts.length; i++) {
+              const port = currentPorts[i];
               const statusClass = port.state.toUpperCase() === 'LISTEN' ? 'status-listen' :
                                  port.state.toUpperCase() === 'ESTABLISHED' ? 'status-established' : 'status-other';
 
-              html += \`<tr>
-                <td><span class="protocol-tag">\${port.protocol}</span></td>
-                <td title="\${port.localAddress}">\${port.localAddress}</td>
-                <td title="\${port.remoteAddress || '-'}">\${port.remoteAddress || '-'}</td>
-                <td><span class="status \${statusClass}">\${port.state}</span></td>
-                <td>\${port.pid}</td>
-                <td title="\${port.processName || '-'}">\${port.processName || '-'}</td>
-                <td>
-                  \${port.pid !== '-' && port.pid !== '0' ? \`<button onclick="killProcess('\${port.pid}', '\${port.processName}')" class="btn" style="background: #f44336; padding: 4px 8px; font-size: 11px;">终止</button>\` : '-'}
-                </td>
-              </tr>\`;
-            });
+              html += '<tr>';
+              html += \`<td><span class="protocol-tag">\${port.protocol}</span></td>\`;
+              html += \`<td>\${port.localAddress}</td>\`;
+              html += \`<td>\${port.remoteAddress || '-'}</td>\`;
+              html += \`<td><span class="status \${statusClass}">\${port.state}</span></td>\`;
+              html += \`<td>\${port.pid}</td>\`;
+              html += \`<td>\${port.processName || '-'}</td>\`;
+              html += '<td>';
+              if (port.pid !== '-' && port.pid !== '0') {
+                html += \`<button onclick="killProcess('\${port.pid}', '\${port.processName}')" class="btn" style="background: #f44336; padding: 4px 8px; font-size: 11px;">终止</button>\`;
+              } else {
+                html += '-';
+              }
+              html += '</td>';
+              html += '</tr>';
+            }
 
-            html += '</table>';
+            html += '</tbody></table>';
 
             // 分页控制
             const totalPages = Math.ceil(filteredPorts.length / itemsPerPage);
             if (totalPages > 1) {
-              html += \`<div class="pagination" style="text-align: center; margin-top: 15px;">
-                <button onclick="changePage(-1)" \${currentPage === 0 ? 'disabled' : ''} class="btn" style="margin: 0 5px;">上一页</button>
-                <span style="margin: 0 10px;">第 \${currentPage + 1} 页 / 共 \${totalPages} 页</span>
-                <button onclick="changePage(1)" \${currentPage === totalPages - 1 ? 'disabled' : ''} class="btn" style="margin: 0 5px;">下一页</button>
-              </div>\`;
+              html += '<div class="pagination" style="text-align: center; margin-top: 15px;">';
+              html += \`<button onclick="changePage(-1)" \${currentPage === 0 ? 'disabled' : ''} class="btn" style="margin: 0 5px;">上一页</button>\`;
+              html += \`<span style="margin: 0 10px;">第 \${currentPage + 1} 页 / 共 \${totalPages} 页</span>\`;
+              html += \`<button onclick="changePage(1)" \${currentPage === totalPages - 1 ? 'disabled' : ''} class="btn" style="margin: 0 5px;">下一页</button>\`;
+              html += '</div>';
             }
 
             html += \`<div class="stats">显示 \${startIndex + 1}-\${endIndex} 条，共 \${filteredPorts.length} 个活跃端口</div>\`;
+
+            // 一次性更新 DOM
             portList.innerHTML = html;
           }
 
