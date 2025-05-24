@@ -195,21 +195,62 @@ body {
   font-size: 14px;
   font-weight: 600;
   border: 1px solid rgba(102, 126, 234, 0.3);
-  transition: all 0.2s ease;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
 }
 
 .btn:hover {
   background: rgba(102, 126, 234, 0.2);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
 }
 
 .btn-primary {
   background: linear-gradient(135deg, #667eea, #764ba2);
   color: white;
   border: 1px solid #667eea;
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
 }
 
 .btn-primary:hover {
   background: linear-gradient(135deg, #5a6fd8, #6a4190);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
+}
+
+/* 终止按钮特殊样式 */
+.btn-danger {
+  background: linear-gradient(135deg, #e74c3c, #c0392b);
+  color: white;
+  border: 1px solid #e74c3c;
+  padding: 6px 12px;
+  font-size: 12px;
+  border-radius: 6px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  box-shadow: 0 2px 6px rgba(231, 76, 60, 0.3);
+  transition: all 0.3s ease;
+}
+
+.btn-danger:hover {
+  background: linear-gradient(135deg, #c0392b, #a93226);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(231, 76, 60, 0.4);
+}
+
+.btn-danger:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 6px rgba(231, 76, 60, 0.3);
+}
+
+/* 小型按钮样式 */
+.btn-sm {
+  padding: 4px 8px;
+  font-size: 11px;
+  border-radius: 4px;
+  min-width: 60px;
 }
 
 /* 输入框样式 */
@@ -253,6 +294,9 @@ body {
   border-radius: 12px;
   border: 2px solid rgba(44, 62, 80, 0.1);
   background: rgba(255,255,255,0.8);
+  /* 修复滚动问题 */
+  max-height: calc(100vh - 200px); /* 确保有明确的高度限制 */
+  min-height: 400px; /* 最小高度 */
   /* 性能优化 */
   will-change: scroll-position;
   contain: layout style paint;
@@ -269,52 +313,119 @@ body {
 }
 
 .table th {
-  background: linear-gradient(135deg, #667eea, #764ba2);
+  background: linear-gradient(135deg, #2c3e50, #34495e);
   color: white;
-  padding: 14px 12px;
-  border-bottom: 1px solid rgba(255,255,255,0.2);
-  font-weight: 600;
+  padding: 16px 14px;
+  border-bottom: 2px solid rgba(255,255,255,0.1);
+  font-weight: 700;
   text-align: left;
   position: sticky;
   top: 0;
   z-index: 10;
-  text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+  text-shadow: 0 1px 3px rgba(0,0,0,0.3);
+  font-size: 13px;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  border-right: 1px solid rgba(255,255,255,0.1);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.table th:first-child {
+  border-top-left-radius: 12px;
+}
+
+.table th:last-child {
+  border-top-right-radius: 12px;
+  border-right: none;
+}
+
+.table th:hover {
+  background: linear-gradient(135deg, #34495e, #2c3e50);
+  cursor: pointer;
 }
 
 .table td {
-  padding: 12px;
-  border-bottom: 1px solid rgba(44, 62, 80, 0.1);
-  background: rgba(255,255,255,0.9);
+  padding: 14px 12px;
+  border-bottom: 1px solid rgba(44, 62, 80, 0.08);
+  background: rgba(255,255,255,0.95);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   color: #2c3e50;
   font-weight: 500;
+  vertical-align: middle;
+  border-right: 1px solid rgba(44, 62, 80, 0.05);
+}
+
+.table td:last-child {
+  border-right: none;
+}
+
+.table tbody tr {
+  transition: all 0.3s ease;
 }
 
 .table tbody tr:hover td {
-  background: rgba(102, 126, 234, 0.15);
+  background: rgba(102, 126, 234, 0.12);
+  transform: scale(1.01);
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.15);
+}
+
+.table tbody tr:nth-child(even) td {
+  background: rgba(248, 249, 250, 0.8);
+}
+
+.table tbody tr:nth-child(even):hover td {
+  background: rgba(102, 126, 234, 0.12);
 }
 
 /* 状态和协议标签 */
 .status {
-  padding: 4px 8px;
-  border-radius: 4px;
+  padding: 6px 12px;
+  border-radius: 20px;
   font-size: 11px;
-  font-weight: 500;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: inline-block;
+  min-width: 70px;
+  text-align: center;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  border: 2px solid transparent;
 }
 
-.status-listen { background: #4caf50; color: white; }
-.status-established { background: #667eea; color: white; }
-.status-other { background: #ff9800; color: white; }
+.status-listen {
+  background: linear-gradient(135deg, #27ae60, #2ecc71);
+  color: white;
+  border-color: #27ae60;
+}
+
+.status-established {
+  background: linear-gradient(135deg, #3498db, #5dade2);
+  color: white;
+  border-color: #3498db;
+}
+
+.status-other {
+  background: linear-gradient(135deg, #f39c12, #f1c40f);
+  color: white;
+  border-color: #f39c12;
+}
 
 .protocol-tag {
-  background: #667eea;
+  background: linear-gradient(135deg, #8e44ad, #9b59b6);
   color: white;
-  padding: 2px 6px;
-  border-radius: 3px;
+  padding: 4px 10px;
+  border-radius: 15px;
   font-size: 11px;
-  font-weight: 500;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: inline-block;
+  min-width: 45px;
+  text-align: center;
+  box-shadow: 0 2px 4px rgba(142, 68, 173, 0.3);
+  border: 2px solid #8e44ad;
 }
 
 /* 加载和错误状态 */

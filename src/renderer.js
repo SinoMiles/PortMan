@@ -183,8 +183,8 @@ function renderPortTable() {
                        port.state.toUpperCase() === 'ESTABLISHED' ? 'status-established' : 'status-other';
 
     const actionBtn = (port.pid !== '-' && port.pid !== '0') ?
-      '<button onclick="killProcess(\'' + port.pid + '\', \'' + (port.processName || '').replace(/'/g, '') + '\')" class="btn" style="background: #f44336; padding: 4px 8px; font-size: 11px;">终止</button>' :
-      '-';
+      '<button onclick="killProcess(\'' + port.pid + '\', \'' + (port.processName || '').replace(/'/g, '') + '\')" class="btn btn-danger btn-sm">终止</button>' :
+      '<span style="color: #bdc3c7; font-style: italic;">-</span>';
 
     rows.push(
       '<tr>' +
