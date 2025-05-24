@@ -132,29 +132,48 @@ function createWindow() {
             overflow-y: auto;
             border-radius: 8px;
             border: 1px solid rgba(255,255,255,0.2);
+            /* 性能优化 */
+            will-change: scroll-position;
+            transform: translateZ(0);
+            -webkit-overflow-scrolling: touch;
           }
           .table {
             width: 100%;
             border-collapse: collapse;
             font-size: 13px;
+            /* 性能优化 */
+            table-layout: fixed;
           }
           .table th {
             background: rgba(255,255,255,0.2);
-            padding: 12px 10px;
+            padding: 8px 6px;
             border-bottom: 1px solid rgba(255,255,255,0.3);
             font-weight: 600;
             text-align: left;
             position: sticky;
             top: 0;
+            z-index: 10;
+            /* 性能优化 */
+            will-change: transform;
           }
           .table td {
-            padding: 10px;
+            padding: 6px;
             border-bottom: 1px solid rgba(255,255,255,0.1);
             background: rgba(255,255,255,0.05);
+            /* 性能优化 */
+            will-change: auto;
           }
           .table tr:hover td {
             background: rgba(255,255,255,0.1);
           }
+          /* 列宽优化 */
+          .table th:nth-child(1), .table td:nth-child(1) { width: 8%; }
+          .table th:nth-child(2), .table td:nth-child(2) { width: 25%; }
+          .table th:nth-child(3), .table td:nth-child(3) { width: 20%; }
+          .table th:nth-child(4), .table td:nth-child(4) { width: 12%; }
+          .table th:nth-child(5), .table td:nth-child(5) { width: 10%; }
+          .table th:nth-child(6), .table td:nth-child(6) { width: 15%; }
+          .table th:nth-child(7), .table td:nth-child(7) { width: 10%; }
           .status {
             padding: 4px 8px;
             border-radius: 4px;
@@ -211,6 +230,29 @@ function createWindow() {
                 <div class="card-title">
                   🔌 端口列表
                 </div>
+                <div style="display: flex; gap: 10px; align-items: center;">
+                  <input type="text" id="searchInput" placeholder="搜索端口、进程..." style="
+                    background: rgba(255,255,255,0.1);
+                    border: 1px solid rgba(255,255,255,0.3);
+                    color: white;
+                    padding: 6px 12px;
+                    border-radius: 6px;
+                    font-size: 13px;
+                    width: 200px;
+                  " onkeyup="filterPorts()">
+                  <select id="protocolFilter" style="
+                    background: rgba(255,255,255,0.1);
+                    border: 1px solid rgba(255,255,255,0.3);
+                    color: white;
+                    padding: 6px 12px;
+                    border-radius: 6px;
+                    font-size: 13px;
+                  " onchange="filterPorts()">
+                    <option value="">所有协议</option>
+                    <option value="TCP">TCP</option>
+                    <option value="UDP">UDP</option>
+                  </select>
+                </div>
               </div>
               <div class="table-container">
                 <div id="portList">
@@ -258,27 +300,47 @@ function createWindow() {
             }
           }
 
+          // 全局变量存储端口数据
+          let allPorts = [];
+          let filteredPorts = [];
+          let currentPage = 0;
+          const itemsPerPage = 50; // 每页显示50条记录
+
           function displayPorts(ports) {
             const portList = document.getElementById('portList');
+            allPorts = ports;
+            filteredPorts = ports;
+
             if (ports.length === 0) {
               portList.innerHTML = '<div class="empty">未找到活跃端口</div>';
               return;
             }
 
+            // 使用分页显示，提升性能
+            renderPortTable();
+          }
+
+          function renderPortTable() {
+            const portList = document.getElementById('portList');
+            const startIndex = currentPage * itemsPerPage;
+            const endIndex = Math.min(startIndex + itemsPerPage, filteredPorts.length);
+            const currentPorts = filteredPorts.slice(startIndex, endIndex);
+
             let html = '<table class="table">';
             html += '<tr><th>协议</th><th>本地地址</th><th>远程地址</th><th>状态</th><th>PID</th><th>进程名</th><th>操作</th></tr>';
 
-            ports.forEach(port => {
+            // 使用 DocumentFragment 提升性能
+            currentPorts.forEach(port => {
               const statusClass = port.state.toUpperCase() === 'LISTEN' ? 'status-listen' :
                                  port.state.toUpperCase() === 'ESTABLISHED' ? 'status-established' : 'status-other';
 
               html += \`<tr>
                 <td><span class="protocol-tag">\${port.protocol}</span></td>
-                <td>\${port.localAddress}</td>
-                <td>\${port.remoteAddress || '-'}</td>
+                <td title="\${port.localAddress}">\${port.localAddress}</td>
+                <td title="\${port.remoteAddress || '-'}">\${port.remoteAddress || '-'}</td>
                 <td><span class="status \${statusClass}">\${port.state}</span></td>
                 <td>\${port.pid}</td>
-                <td>\${port.processName || '-'}</td>
+                <td title="\${port.processName || '-'}">\${port.processName || '-'}</td>
                 <td>
                   \${port.pid !== '-' && port.pid !== '0' ? \`<button onclick="killProcess('\${port.pid}', '\${port.processName}')" class="btn" style="background: #f44336; padding: 4px 8px; font-size: 11px;">终止</button>\` : '-'}
                 </td>
@@ -286,8 +348,48 @@ function createWindow() {
             });
 
             html += '</table>';
-            html += \`<div class="stats">共找到 \${ports.length} 个活跃端口</div>\`;
+
+            // 分页控制
+            const totalPages = Math.ceil(filteredPorts.length / itemsPerPage);
+            if (totalPages > 1) {
+              html += \`<div class="pagination" style="text-align: center; margin-top: 15px;">
+                <button onclick="changePage(-1)" \${currentPage === 0 ? 'disabled' : ''} class="btn" style="margin: 0 5px;">上一页</button>
+                <span style="margin: 0 10px;">第 \${currentPage + 1} 页 / 共 \${totalPages} 页</span>
+                <button onclick="changePage(1)" \${currentPage === totalPages - 1 ? 'disabled' : ''} class="btn" style="margin: 0 5px;">下一页</button>
+              </div>\`;
+            }
+
+            html += \`<div class="stats">显示 \${startIndex + 1}-\${endIndex} 条，共 \${filteredPorts.length} 个活跃端口</div>\`;
             portList.innerHTML = html;
+          }
+
+          function changePage(direction) {
+            const totalPages = Math.ceil(filteredPorts.length / itemsPerPage);
+            currentPage += direction;
+            if (currentPage < 0) currentPage = 0;
+            if (currentPage >= totalPages) currentPage = totalPages - 1;
+            renderPortTable();
+          }
+
+          function filterPorts() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const protocolFilter = document.getElementById('protocolFilter').value;
+
+            filteredPorts = allPorts.filter(port => {
+              const matchesSearch = !searchTerm ||
+                port.localAddress.toLowerCase().includes(searchTerm) ||
+                port.remoteAddress.toLowerCase().includes(searchTerm) ||
+                port.processName.toLowerCase().includes(searchTerm) ||
+                port.pid.toString().includes(searchTerm) ||
+                port.state.toLowerCase().includes(searchTerm);
+
+              const matchesProtocol = !protocolFilter || port.protocol === protocolFilter;
+
+              return matchesSearch && matchesProtocol;
+            });
+
+            currentPage = 0; // 重置到第一页
+            renderPortTable();
           }
 
           async function killProcess(pid, processName) {
