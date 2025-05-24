@@ -25,7 +25,7 @@ function createWindow() {
     show: false,
     autoHideMenuBar: true, // 自动隐藏菜单栏
     menuBarVisible: false,  // 菜单栏不可见
-    backgroundColor: '#667eea', // 设置背景色避免白屏闪烁
+    backgroundColor: '#f093fb', // 设置背景色避免白屏闪烁
     webSecurity: false, // 允许加载本地资源
     titleBarOverlay: false // 禁用标题栏覆盖
   });
@@ -47,8 +47,8 @@ function createWindow() {
           }
           body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 50%, #4facfe 100%);
+            color: #2c3e50;
             height: 100vh;
             overflow: hidden;
           }
@@ -60,13 +60,15 @@ function createWindow() {
 
           /* 自定义标题栏样式 */
           .custom-titlebar {
-            background: transparent;
-            height: 40px;
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(20px);
+            height: 45px;
             display: flex;
             align-items: center;
             -webkit-app-region: drag; /* 允许拖拽窗口 */
             user-select: none;
-            padding-top: 8px;
+            border-bottom: 2px solid rgba(44, 62, 80, 0.1);
+            box-shadow: 0 2px 20px rgba(0,0,0,0.1);
           }
 
           .titlebar-content {
@@ -74,13 +76,14 @@ function createWindow() {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 0 12px;
+            padding: 0 16px;
           }
 
           .titlebar-title {
-            font-size: 13px;
-            font-weight: 500;
-            color: rgba(255,255,255,0.9);
+            font-size: 15px;
+            font-weight: 700;
+            color: #2c3e50;
+            text-shadow: 0 1px 2px rgba(255,255,255,0.8);
           }
 
           .titlebar-controls {
@@ -89,38 +92,47 @@ function createWindow() {
           }
 
           .titlebar-btn {
-            width: 36px;
-            height: 28px;
+            width: 40px;
+            height: 32px;
             border: none;
-            background: rgba(255,255,255,0.1);
-            color: rgba(255,255,255,0.9);
+            background: rgba(44, 62, 80, 0.1);
+            color: #2c3e50;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: all 0.2s ease;
-            border-radius: 6px;
-            margin-left: 4px;
-            border: 1px solid rgba(255,255,255,0.2);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border-radius: 8px;
+            margin-left: 6px;
+            border: 2px solid rgba(44, 62, 80, 0.2);
+            font-weight: 600;
           }
 
           .titlebar-btn:hover {
-            background: rgba(255,255,255,0.2);
-            transform: translateY(-1px);
+            background: rgba(44, 62, 80, 0.15);
+            transform: translateY(-2px) scale(1.05);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
           }
 
           .close-btn:hover {
             background: #e74c3c !important;
             color: white;
             border-color: #e74c3c;
+            box-shadow: 0 4px 15px rgba(231, 76, 60, 0.4);
           }
 
           .minimize-btn:hover {
-            background: rgba(255,255,255,0.25);
+            background: #3498db;
+            color: white;
+            border-color: #3498db;
+            box-shadow: 0 4px 15px rgba(52, 152, 219, 0.4);
           }
 
           .maximize-btn:hover {
-            background: rgba(255,255,255,0.25);
+            background: #2ecc71;
+            color: white;
+            border-color: #2ecc71;
+            box-shadow: 0 4px 15px rgba(46, 204, 113, 0.4);
           }
 
           .main-content {
@@ -129,13 +141,15 @@ function createWindow() {
             overflow-y: auto;
           }
           .card {
-            background: rgba(255,255,255,0.12);
-            border-radius: 12px;
-            padding: 20px;
-            border: 1px solid rgba(255,255,255,0.2);
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 16px;
+            padding: 24px;
+            border: 2px solid rgba(44, 62, 80, 0.1);
             height: 100%;
             display: flex;
             flex-direction: column;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
           }
           .card-header {
             display: flex;
@@ -151,62 +165,76 @@ function createWindow() {
             gap: 8px;
           }
           .btn {
-            background: rgba(255,255,255,0.2);
-            color: white;
+            background: rgba(44, 62, 80, 0.1);
+            color: #2c3e50;
             border: none;
-            padding: 8px 16px;
-            border-radius: 8px;
+            padding: 10px 18px;
+            border-radius: 10px;
             cursor: pointer;
-            font-size: 13px;
-            font-weight: 500;
-            border: 1px solid rgba(255,255,255,0.3);
+            font-size: 14px;
+            font-weight: 600;
+            border: 2px solid rgba(44, 62, 80, 0.2);
+            transition: all 0.3s ease;
           }
           .btn:hover {
-            background: rgba(255,255,255,0.3);
+            background: rgba(44, 62, 80, 0.15);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
           }
           .btn-primary {
-            background: #667eea;
-            border: 1px solid #667eea;
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            border: 2px solid #3498db;
+            box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
           }
           .btn-primary:hover {
-            background: #5a6fd8;
+            background: linear-gradient(135deg, #2980b9, #1f4e79);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(52, 152, 219, 0.4);
           }
           .table-container {
             flex: 1;
             overflow-y: auto;
-            border-radius: 8px;
-            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 12px;
+            border: 2px solid rgba(44, 62, 80, 0.1);
             /* 性能优化 - 简化滚动 */
             contain: layout style paint;
             transform: translate3d(0,0,0);
+            background: rgba(255,255,255,0.8);
           }
           .table {
             width: 100%;
             border-collapse: separate;
             border-spacing: 0;
-            font-size: 13px;
+            font-size: 14px;
             table-layout: fixed;
           }
           .table th {
-            background: rgba(255,255,255,0.25);
-            padding: 10px 8px;
-            border-bottom: 1px solid rgba(255,255,255,0.3);
-            font-weight: 600;
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            padding: 14px 12px;
+            border-bottom: 2px solid rgba(44, 62, 80, 0.1);
+            font-weight: 700;
             text-align: left;
             position: sticky;
             top: 0;
             z-index: 10;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.2);
           }
           .table td {
-            padding: 8px;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-            background: rgba(255,255,255,0.08);
+            padding: 12px;
+            border-bottom: 1px solid rgba(44, 62, 80, 0.1);
+            background: rgba(255,255,255,0.9);
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
+            color: #2c3e50;
+            font-weight: 500;
           }
           .table tbody tr:hover td {
-            background: rgba(255,255,255,0.15);
+            background: rgba(52, 152, 219, 0.1);
+            transform: scale(1.01);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
           }
           /* 列宽优化 */
           .table th:nth-child(1), .table td:nth-child(1) { width: 8%; }
@@ -217,42 +245,73 @@ function createWindow() {
           .table th:nth-child(6), .table td:nth-child(6) { width: 15%; }
           .table th:nth-child(7), .table td:nth-child(7) { width: 10%; }
           .status {
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 11px;
-            font-weight: 500;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border: 2px solid;
+            color: white;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.2);
           }
-          .status-listen { background: #4caf50; }
-          .status-established { background: #2196f3; }
-          .status-other { background: #ff9800; }
+          .status-listen {
+            background: linear-gradient(135deg, #2ecc71, #27ae60);
+            border-color: #2ecc71;
+            box-shadow: 0 2px 8px rgba(46, 204, 113, 0.3);
+          }
+          .status-established {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            border-color: #3498db;
+            box-shadow: 0 2px 8px rgba(52, 152, 219, 0.3);
+          }
+          .status-other {
+            background: linear-gradient(135deg, #f39c12, #e67e22);
+            border-color: #f39c12;
+            box-shadow: 0 2px 8px rgba(243, 156, 18, 0.3);
+          }
           .protocol-tag {
-            background: #667eea;
-            padding: 2px 6px;
-            border-radius: 3px;
-            font-size: 11px;
-            font-weight: 500;
+            background: linear-gradient(135deg, #9b59b6, #8e44ad);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 700;
+            border: 2px solid #9b59b6;
+            box-shadow: 0 2px 8px rgba(155, 89, 182, 0.3);
+            text-shadow: 0 1px 2px rgba(0,0,0,0.2);
           }
           .loading {
             text-align: center;
             padding: 60px 20px;
-            font-size: 16px;
-            color: rgba(255,255,255,0.8);
+            font-size: 18px;
+            color: #2c3e50;
+            font-weight: 600;
           }
           .error {
             text-align: center;
             padding: 40px 20px;
-            color: #ff6b6b;
+            color: #e74c3c;
+            font-weight: 600;
+            background: rgba(231, 76, 60, 0.1);
+            border-radius: 10px;
+            border: 2px solid rgba(231, 76, 60, 0.2);
           }
           .empty {
             text-align: center;
             padding: 60px 20px;
-            color: rgba(255,255,255,0.6);
+            color: #7f8c8d;
+            font-weight: 500;
           }
           .stats {
-            font-size: 12px;
-            color: rgba(255,255,255,0.7);
+            font-size: 14px;
+            color: #2c3e50;
+            font-weight: 600;
             margin-top: 15px;
             text-align: center;
+            background: rgba(44, 62, 80, 0.1);
+            padding: 10px;
+            border-radius: 8px;
           }
         </style>
       </head>
@@ -290,27 +349,34 @@ function createWindow() {
                 <div class="card-title">
                   🔌 端口列表
                 </div>
-                <div style="display: flex; gap: 10px; align-items: center;">
+                <div style="display: flex; gap: 12px; align-items: center;">
                   <input type="text" id="searchInput" placeholder="搜索端口、进程..." style="
-                    background: rgba(255,255,255,0.1);
-                    border: 1px solid rgba(255,255,255,0.3);
-                    color: white;
-                    padding: 6px 12px;
-                    border-radius: 6px;
-                    font-size: 13px;
-                    width: 200px;
-                  " onkeyup="filterPorts()">
+                    background: rgba(255,255,255,0.9);
+                    border: 2px solid rgba(44, 62, 80, 0.2);
+                    color: #2c3e50;
+                    padding: 10px 16px;
+                    border-radius: 10px;
+                    font-size: 14px;
+                    font-weight: 500;
+                    width: 240px;
+                    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+                    transition: all 0.3s ease;
+                  " onkeyup="filterPorts()" onfocus="this.style.borderColor='#3498db'; this.style.boxShadow='0 4px 12px rgba(52, 152, 219, 0.3)'" onblur="this.style.borderColor='rgba(44, 62, 80, 0.2)'; this.style.boxShadow='0 2px 8px rgba(0,0,0,0.1)'">
                   <select id="protocolFilter" style="
-                    background: rgba(255,255,255,0.1);
-                    border: 1px solid rgba(255,255,255,0.3);
-                    color: white;
-                    padding: 6px 12px;
-                    border-radius: 6px;
-                    font-size: 13px;
-                  " onchange="filterPorts()">
-                    <option value="">所有协议</option>
-                    <option value="TCP">TCP</option>
-                    <option value="UDP">UDP</option>
+                    background: rgba(255,255,255,0.9);
+                    border: 2px solid rgba(44, 62, 80, 0.2);
+                    color: #2c3e50;
+                    padding: 10px 16px;
+                    border-radius: 10px;
+                    font-size: 14px;
+                    font-weight: 500;
+                    cursor: pointer;
+                    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+                    transition: all 0.3s ease;
+                  " onchange="filterPorts()" onfocus="this.style.borderColor='#3498db'; this.style.boxShadow='0 4px 12px rgba(52, 152, 219, 0.3)'" onblur="this.style.borderColor='rgba(44, 62, 80, 0.2)'; this.style.boxShadow='0 2px 8px rgba(0,0,0,0.1)'">
+                    <option value="" style="background: white; color: #2c3e50; padding: 8px;">所有协议</option>
+                    <option value="TCP" style="background: white; color: #2c3e50; padding: 8px;">TCP</option>
+                    <option value="UDP" style="background: white; color: #2c3e50; padding: 8px;">UDP</option>
                   </select>
                   <button onclick="refreshPorts()" class="btn btn-primary">🔄 刷新</button>
                 </div>
