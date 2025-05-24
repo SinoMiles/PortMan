@@ -200,32 +200,41 @@ function loadMorePorts() {
 
   isLoading = true;
   const loadingIndicator = document.getElementById('loadingIndicator');
-  if (loadingIndicator) {
+
+  // 只在有更多数据时显示加载指示器
+  if (loadingIndicator && currentIndex < filteredPorts.length) {
     loadingIndicator.style.display = 'block';
+    loadingIndicator.style.opacity = '1';
   }
 
-  // 模拟异步加载延迟
+  // 减少延迟，使加载更流畅
   setTimeout(() => {
     const endIndex = Math.min(currentIndex + itemsPerLoad, filteredPorts.length);
     const newPorts = filteredPorts.slice(currentIndex, endIndex);
 
-    // 添加新端口到显示列表
-    displayedPorts = displayedPorts.concat(newPorts);
-    currentIndex = endIndex;
+    if (newPorts.length > 0) {
+      // 添加新端口到显示列表
+      displayedPorts = displayedPorts.concat(newPorts);
+      currentIndex = endIndex;
 
-    // 渲染新的行
-    renderNewRows(newPorts);
+      // 渲染新的行
+      renderNewRows(newPorts);
 
-    // 更新统计信息
-    updateStats();
-
-    isLoading = false;
-    if (loadingIndicator) {
-      loadingIndicator.style.display = 'none';
+      // 更新统计信息
+      updateStats();
     }
 
+    // 平滑隐藏加载指示器
+    if (loadingIndicator) {
+      loadingIndicator.style.opacity = '0';
+      setTimeout(() => {
+        loadingIndicator.style.display = 'none';
+      }, 150);
+    }
+
+    isLoading = false;
     console.log('加载了', newPorts.length, '个端口，当前总数:', displayedPorts.length);
-  }, 200); // 200ms 延迟，提供更好的用户体验
+  }, 100); // 减少延迟到100ms
 }
 
 // 渲染新的表格行
@@ -233,7 +242,9 @@ function renderNewRows(ports) {
   const tbody = document.getElementById('portTableBody');
   if (!tbody) return;
 
-  const rows = [];
+  // 创建文档片段，减少DOM操作
+  const fragment = document.createDocumentFragment();
+
   for (let i = 0; i < ports.length; i++) {
     const port = ports[i];
     const statusClass = port.state.toUpperCase() === 'LISTEN' ? 'status-listen' :
@@ -243,20 +254,27 @@ function renderNewRows(ports) {
       '<button onclick="killProcess(\'' + port.pid + '\', \'' + (port.processName || '').replace(/'/g, '') + '\')" class="btn btn-danger btn-sm">终止</button>' :
       '<span style="color: #bdc3c7; font-style: italic;">-</span>';
 
-    rows.push(
-      '<tr class="port-row" style="opacity: 0; animation: fadeInRow 0.3s ease forwards; animation-delay: ' + (i * 50) + 'ms;">' +
+    // 创建行元素
+    const tr = document.createElement('tr');
+    tr.className = 'port-row';
+    tr.style.opacity = '0';
+    tr.style.animation = 'fadeInRow 0.2s ease forwards';
+    tr.style.animationDelay = (i * 20) + 'ms'; // 减少动画延迟
+
+    tr.innerHTML =
       '<td><span class="protocol-tag">' + port.protocol + '</span></td>' +
       '<td>' + port.localAddress + '</td>' +
       '<td>' + (port.remoteAddress || '-') + '</td>' +
       '<td><span class="status ' + statusClass + '">' + port.state + '</span></td>' +
       '<td>' + port.pid + '</td>' +
       '<td>' + (port.processName || '-') + '</td>' +
-      '<td>' + actionBtn + '</td>' +
-      '</tr>'
-    );
+      '<td>' + actionBtn + '</td>';
+
+    fragment.appendChild(tr);
   }
 
-  tbody.innerHTML += rows.join('');
+  // 一次性添加所有行，减少重排
+  tbody.appendChild(fragment);
 }
 
 // 更新统计信息
@@ -273,18 +291,23 @@ function updateStats() {
 }
 
 // 处理滚动事件
+let scrollTimeout;
 function handleScroll() {
-  const tableContainer = document.querySelector('.table-container');
-  if (!tableContainer) return;
+  // 防抖处理，减少频繁触发
+  clearTimeout(scrollTimeout);
+  scrollTimeout = setTimeout(() => {
+    const tableContainer = document.querySelector('.table-container');
+    if (!tableContainer) return;
 
-  const scrollTop = tableContainer.scrollTop;
-  const scrollHeight = tableContainer.scrollHeight;
-  const clientHeight = tableContainer.clientHeight;
+    const scrollTop = tableContainer.scrollTop;
+    const scrollHeight = tableContainer.scrollHeight;
+    const clientHeight = tableContainer.clientHeight;
 
-  // 当滚动到底部附近时加载更多数据
-  if (scrollTop + clientHeight >= scrollHeight - 100) {
-    loadMorePorts();
-  }
+    // 当滚动到底部附近时加载更多数据，增加触发距离
+    if (scrollTop + clientHeight >= scrollHeight - 150 && !isLoading) {
+      loadMorePorts();
+    }
+  }, 50); // 50ms 防抖延迟
 }
 
 // 防抖函数，减少过滤频率

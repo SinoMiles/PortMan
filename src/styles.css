@@ -484,21 +484,23 @@ body {
 /* 无限滚动相关样式 */
 .loading-indicator {
   text-align: center;
-  padding: 20px;
+  padding: 15px 20px;
   font-size: 14px;
   color: #667eea;
   font-weight: 600;
-  background: rgba(102, 126, 234, 0.1);
+  background: rgba(102, 126, 234, 0.08);
   border-radius: 8px;
-  margin: 10px;
-  border: 1px solid rgba(102, 126, 234, 0.2);
+  margin: 8px 10px;
+  border: 1px solid rgba(102, 126, 234, 0.15);
+  transition: opacity 0.3s ease; /* 添加透明度过渡 */
+  opacity: 0;
 }
 
 /* 行淡入动画 */
 @keyframes fadeInRow {
   from {
     opacity: 0;
-    transform: translateY(10px);
+    transform: translateY(5px); /* 减少移动距离 */
   }
   to {
     opacity: 1;
@@ -507,7 +509,7 @@ body {
 }
 
 .port-row {
-  animation: fadeInRow 0.3s ease forwards;
+  animation: fadeInRow 0.2s ease forwards; /* 减少动画时间 */
 }
 
 /* 加载指示器动画 */
