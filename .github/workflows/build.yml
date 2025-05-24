@@ -24,10 +24,12 @@ jobs:
       with:
         node-version: '18'
 
-    - name: Clean install dependencies
-      run: |
-        rm -f package-lock.json
-        npm install
+    - name: Remove lock file if exists
+      run: node -e "const fs = require('fs'); if (fs.existsSync('package-lock.json')) fs.unlinkSync('package-lock.json')"
+      continue-on-error: true
+
+    - name: Install dependencies
+      run: npm install
 
     - name: Lint code (optional)
       run: npm run lint || echo "Linting skipped"
@@ -122,10 +124,12 @@ jobs:
       with:
         node-version: '18'
 
-    - name: Clean install dependencies
-      run: |
-        rm -f package-lock.json
-        npm install
+    - name: Remove lock file if exists
+      run: node -e "const fs = require('fs'); if (fs.existsSync('package-lock.json')) fs.unlinkSync('package-lock.json')"
+      continue-on-error: true
+
+    - name: Install dependencies
+      run: npm install
 
     - name: Run tests
       run: npm test
