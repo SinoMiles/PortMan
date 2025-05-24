@@ -447,7 +447,7 @@ body {
 /* 加载和错误状态 */
 .loading {
   text-align: center;
-  padding: 60px 20px;
+  padding: 10px 20px;
   font-size: 18px;
   color: #2c3e50;
   font-weight: 600;

@@ -177,7 +177,7 @@ ipcMain.handle('window-is-maximized', () => {
 
 // 获取端口信息的函数
 async function getPortsInfo() {
-  return new Promise((resolve, reject) => {
+  return new Promise(async (resolve, reject) => {
     const platform = os.platform();
     let command;
     let args;
@@ -210,13 +210,13 @@ async function getPortsInfo() {
       console.error('stderr:', data.toString());
     });
 
-    child.on('close', (code) => {
+    child.on('close', async (code) => {
       console.log('命令执行完成，退出码:', code);
       console.log('输出长度:', output.length);
 
       if (code === 0 || output.length > 0) {
         try {
-          const ports = parseNetstatOutput(output, platform);
+          const ports = await parseNetstatOutput(output, platform);
           console.log('解析得到端口数量:', ports.length);
           resolve(ports);
         } catch (parseError) {
@@ -243,10 +243,11 @@ async function getPortsInfo() {
 }
 
 // 解析 netstat 输出
-function parseNetstatOutput(output, platform) {
+async function parseNetstatOutput(output, platform) {
   const lines = output.split('\n');
   const ports = [];
 
+  // 先收集所有端口信息（不包含进程名）
   for (const line of lines) {
     const trimmedLine = line.trim();
     if (!trimmedLine || trimmedLine.includes('Proto') || trimmedLine.includes('Active')) {
@@ -260,13 +261,14 @@ function parseNetstatOutput(output, platform) {
 
     if (platform === 'win32') {
       if (parts[0] === 'TCP' || parts[0] === 'UDP') {
+        const pid = parts[0] === 'TCP' ? parts[4] : parts[3];
         portInfo = {
           protocol: parts[0],
           localAddress: parts[1],
           remoteAddress: parts[2] || '-',
           state: parts[0] === 'TCP' ? parts[3] : 'UDP',
-          pid: parts[0] === 'TCP' ? parts[4] : parts[3],
-          processName: '-'
+          pid: pid,
+          processName: '-' // 稍后批量获取
         };
       }
     } else {
@@ -287,6 +289,16 @@ function parseNetstatOutput(output, platform) {
     }
   }
 
+  // 对于Windows平台，批量获取进程名
+  if (platform === 'win32') {
+    const processMap = await getAllProcessNames();
+    ports.forEach(port => {
+      if (port.pid && port.pid !== '-' && port.pid !== '0') {
+        port.processName = processMap[port.pid] || '-';
+      }
+    });
+  }
+
   return ports;
 }
 
@@ -302,6 +314,66 @@ function extractProcessName(pidString) {
   if (!pidString || pidString === '-') return '-';
   const parts = pidString.split('/');
   return parts.length > 1 ? parts[1] : '-';
+}
+
+// 批量获取所有进程名 (Windows)
+async function getAllProcessNames() {
+  return new Promise((resolve) => {
+    const platform = os.platform();
+
+    if (platform !== 'win32') {
+      resolve({});
+      return;
+    }
+
+    // 使用 tasklist 命令获取所有进程信息
+    const child = spawn('tasklist', ['/FO', 'CSV', '/NH']);
+    let output = '';
+
+    child.stdout.on('data', (data) => {
+      output += data.toString();
+    });
+
+    child.on('close', (code) => {
+      const processMap = {};
+
+      if (code === 0 && output.trim()) {
+        try {
+          // 解析CSV输出
+          const lines = output.trim().split('\n');
+          for (const line of lines) {
+            if (line.trim()) {
+              // CSV格式: "进程名","PID","会话名","会话#","内存使用"
+              const parts = line.split('","');
+              if (parts.length >= 2) {
+                const processName = parts[0].replace(/^"/, ''); // 移除开头的引号
+                const pid = parts[1].replace(/"/g, ''); // 移除引号
+                if (pid && !isNaN(pid)) {
+                  processMap[pid] = processName;
+                }
+              }
+            }
+          }
+          console.log('获取到进程数量:', Object.keys(processMap).length);
+        } catch (error) {
+          console.error('解析进程列表时出错:', error);
+        }
+      }
+
+      resolve(processMap);
+    });
+
+    child.on('error', (error) => {
+      console.error('获取进程列表时出错:', error);
+      resolve({});
+    });
+
+    // 设置超时
+    setTimeout(() => {
+      child.kill();
+      resolve({});
+    }, 5000);
+  });
 }
 
 // 终止进程
