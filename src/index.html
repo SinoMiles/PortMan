@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PortMan - 端口管理工具</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- 自定义标题栏 -->
+  <div class="custom-titlebar">
+    <div class="titlebar-content">
+      <div class="titlebar-title">PortMan - 端口管理工具</div>
+      <div class="titlebar-buttons">
+        <button class="titlebar-btn minimize-btn" onclick="minimizeWindow()">−</button>
+        <button class="titlebar-btn maximize-btn" onclick="maximizeWindow()">□</button>
+        <button class="titlebar-btn close-btn" onclick="closeWindow()">×</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 主内容区域 -->
+  <div class="main-content">
+    <div class="card">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <h2 style="margin: 0; color: #2c3e50; font-size: 20px; font-weight: 700;">活跃端口列表</h2>
+        <div style="display: flex; gap: 12px; align-items: center;">
+          <input type="text" id="searchInput" placeholder="搜索端口、进程..." class="search-input" onkeyup="filterPorts()">
+          <select id="protocolFilter" class="protocol-filter" onchange="filterPorts()">
+            <option value="">所有协议</option>
+            <option value="TCP">TCP</option>
+            <option value="UDP">UDP</option>
+          </select>
+          <button onclick="refreshPorts()" class="btn btn-primary">🔄 刷新</button>
+        </div>
+      </div>
+
+      <div class="table-container">
+        <div id="portList" class="loading">正在获取端口信息...</div>
+      </div>
+    </div>
+  </div>
+
+  <script src="renderer.js"></script>
+</body>
+</html>
