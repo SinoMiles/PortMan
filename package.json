@@ -10,12 +10,12 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/yourusername/portman.git"
+    "url": "https://github.com/SinoMiles/PortMan.git"
   },
   "bugs": {
-    "url": "https://github.com/yourusername/portman/issues"
+    "url": "https://github.com/SinoMiles/PortMan/issues"
   },
-  "homepage": "https://github.com/yourusername/portman#readme",
+  "homepage": "https://github.com/SinoMiles/PortMan#readme",
   "keywords": [
     "port",
     "network",

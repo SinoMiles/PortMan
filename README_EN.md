@@ -5,7 +5,7 @@
 ![PortMan Logo](https://img.shields.io/badge/PortMan-Port%20Manager-blue?style=for-the-badge)
 
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
-[![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux-lightgrey.svg)](https://github.com/yourusername/portman)
+[![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux-lightgrey.svg)](https://github.com/SinoMiles/PortMan)
 [![Electron](https://img.shields.io/badge/Electron-Latest-47848f.svg)](https://electronjs.org/)
 [![Node.js](https://img.shields.io/badge/Node.js-16%2B-green.svg)](https://nodejs.org/)
 
@@ -45,7 +45,7 @@
 
 1. **Clone Repository**
    ```bash
-   git clone https://github.com/yourusername/portman.git
+   git clone https://github.com/SinoMiles/PortMan.git
    cd portman
    ```
 
