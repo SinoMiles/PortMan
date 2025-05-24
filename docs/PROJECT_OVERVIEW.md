@@ -1,5 +1,11 @@
 # 项目概览 | Project Overview
 
+<div align="center">
+
+![PortMan Cover](images/portman-cover.png)
+
+</div>
+
 [English](#english) | [中文](#中文)
 
 ---

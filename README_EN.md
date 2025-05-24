@@ -2,6 +2,8 @@
 
 <div align="center">
 
+![PortMan Cover](docs/images/portman-cover.png)
+
 ![PortMan Logo](https://img.shields.io/badge/PortMan-Port%20Manager-blue?style=for-the-badge)
 
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
@@ -26,13 +28,11 @@
 - 🎯 **Process Management** - One-click termination of processes occupying ports
 - 🎪 **Zero Configuration** - Ready to use out of the box
 
-## 📸 Screenshots
+## 📸 Application Interface
 
-### Main Interface
-![Main Interface](docs/images/main-interface.png)
+![PortMan Main Interface](docs/images/portman-cover.png)
 
-### Search and Filter
-![Search Filter](docs/images/search-filter.png)
+
 
 ## 🚀 Quick Start
 

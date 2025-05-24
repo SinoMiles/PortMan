@@ -2,6 +2,8 @@
 
 <div align="center">
 
+![PortMan Cover](docs/images/portman-cover.png)
+
 ![PortMan Logo](https://img.shields.io/badge/PortMan-端口管理工具-blue?style=for-the-badge)
 
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
@@ -136,14 +138,7 @@ portman/
 - **macOS**: `netstat -anv`
 - **Linux**: `netstat -tulpn`
 
-### 📱 功能截图
 
-应用包含以下主要界面：
-- 系统信息仪表板
-- 端口列表表格
-- 进程终止确认对话框
-- 多语言切换开关
-- 实时数据刷新
 
 ### 🔧 系统要求
 
