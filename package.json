@@ -1,79 +1,160 @@
 {
   "name": "portman",
   "version": "1.0.0",
-  "description": "跨平台端口管理工具 - Cross-Platform Port Management Tool",
+  "description": "A modern cross-platform port management tool with intuitive GUI for viewing and managing system port usage",
   "main": "src/main.js",
-  "homepage": "./",
+  "author": {
+    "name": "PortMan Team",
+    "email": "contact@portman.dev"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/portman.git"
+  },
+  "bugs": {
+    "url": "https://github.com/yourusername/portman/issues"
+  },
+  "homepage": "https://github.com/yourusername/portman#readme",
+  "keywords": [
+    "port",
+    "network",
+    "process",
+    "management",
+    "electron",
+    "cross-platform",
+    "netstat",
+    "system-monitor"
+  ],
   "scripts": {
     "start": "electron .",
-    "dev": "concurrently \"npm run start-react\" \"wait-on http://localhost:3000 && electron .\"",
-    "start-react": "react-scripts start",
-    "build": "react-scripts build",
-    "build-electron": "npm run build && electron-builder",
-    "build-all": "npm run build && electron-builder --win --mac --linux",
+    "dev": "electron . --dev",
+    "build": "electron-builder",
+    "build:win": "electron-builder --win",
+    "build:mac": "electron-builder --mac",
+    "build:linux": "electron-builder --linux",
+    "build:all": "electron-builder --win --mac --linux",
     "pack": "electron-builder --dir",
-    "dist": "electron-builder"
+    "dist": "electron-builder",
+    "clean": "rimraf dist",
+    "lint": "eslint src/",
+    "test": "echo \"No tests specified\" && exit 0"
   },
   "build": {
-    "appId": "com.portmanager.portman",
+    "appId": "com.portman.app",
     "productName": "PortMan",
+    "copyright": "Copyright © 2024 PortMan Team",
     "directories": {
-      "output": "dist"
+      "output": "dist",
+      "buildResources": "assets"
     },
     "files": [
-      "build/**/*",
-      "src/main.js",
-      "src/preload.js",
-      "node_modules/**/*"
+      "src/**/*",
+      "node_modules/**/*",
+      "!node_modules/*/{CHANGELOG.md,README.md,README,readme.md,readme}",
+      "!node_modules/*/{test,__tests__,tests,powered-test,example,examples}",
+      "!node_modules/*.d.ts",
+      "!node_modules/.bin",
+      "!**/*.{iml,o,hprof,orig,pyc,pyo,rbc,swp,csproj,sln,xproj}",
+      "!.editorconfig",
+      "!**/._*",
+      "!**/{.DS_Store,.git,.hg,.svn,CVS,RCS,SCCS,.gitignore,.gitattributes}",
+      "!**/{__pycache__,thumbs.db,.flowconfig,.idea,.vs,.nyc_output}",
+      "!**/{appveyor.yml,.travis.yml,circle.yml}",
+      "!**/{npm-debug.log,yarn.lock,.yarn-integrity,.yarn-metadata.json}"
+    ],
+    "extraResources": [
+      {
+        "from": "docs",
+        "to": "docs",
+        "filter": ["**/*"]
+      }
     ],
     "mac": {
       "category": "public.app-category.utilities",
       "icon": "assets/icon.icns",
-      "target": "dmg"
+      "target": [
+        {
+          "target": "dmg",
+          "arch": ["x64", "arm64"]
+        },
+        {
+          "target": "zip",
+          "arch": ["x64", "arm64"]
+        }
+      ],
+      "darkModeSupport": true
     },
     "win": {
-      "target": "nsis",
+      "target": [
+        {
+          "target": "nsis",
+          "arch": ["x64", "ia32"]
+        },
+        {
+          "target": "zip",
+          "arch": ["x64", "ia32"]
+        }
+      ],
       "icon": "assets/icon.ico"
     },
     "linux": {
-      "target": "AppImage",
+      "target": [
+        {
+          "target": "AppImage",
+          "arch": ["x64", "arm64"]
+        },
+        {
+          "target": "tar.gz",
+          "arch": ["x64", "arm64"]
+        }
+      ],
       "icon": "assets/icon.png",
-      "category": "Utility"
+      "category": "Utility",
+      "synopsis": "Cross-platform port management tool"
     },
     "nsis": {
       "oneClick": false,
       "allowToChangeInstallationDirectory": true,
+      "allowElevation": true,
       "createDesktopShortcut": true,
-      "createStartMenuShortcut": true
+      "createStartMenuShortcut": true,
+      "shortcutName": "PortMan",
+      "include": "assets/installer.nsh"
+    },
+    "dmg": {
+      "title": "PortMan ${version}",
+      "icon": "assets/icon.icns",
+      "background": "assets/dmg-background.png",
+      "window": {
+        "width": 540,
+        "height": 380
+      },
+      "contents": [
+        {
+          "x": 140,
+          "y": 200,
+          "type": "file"
+        },
+        {
+          "x": 400,
+          "y": 200,
+          "type": "link",
+          "path": "/Applications"
+        }
+      ]
     }
   },
   "dependencies": {
-    "electron": "^27.0.0",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "react-scripts": "5.0.1",
-    "@mui/material": "^5.14.0",
-    "@mui/icons-material": "^5.14.0",
-    "@emotion/react": "^11.11.0",
-    "@emotion/styled": "^11.11.0",
-    "recharts": "^2.8.0",
-    "framer-motion": "^10.16.0"
+    "electron": "^27.0.0"
   },
   "devDependencies": {
-    "concurrently": "^8.2.0",
-    "wait-on": "^7.0.1",
-    "electron-builder": "^24.6.0"
+    "electron-builder": "^24.6.0",
+    "rimraf": "^5.0.0",
+    "eslint": "^8.0.0"
   },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
+  "engines": {
+    "node": ">=16.0.0",
+    "npm": ">=8.0.0"
   }
 }
