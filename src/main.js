@@ -18,7 +18,9 @@ function createWindow() {
       nodeIntegration: false,
       contextIsolation: true,
       enableRemoteModule: false,
-      preload: path.join(__dirname, 'preload.js')
+      preload: path.join(__dirname, 'preload.js'),
+      webSecurity: false, // 允许加载本地资源
+      allowRunningInsecureContent: true // 允许不安全内容
     },
     icon: path.join(__dirname, '../assets/icon.png'),
     frame: false, // 隐藏默认标题栏
@@ -32,37 +34,51 @@ function createWindow() {
     skipTaskbar: false
   });
 
-  // 使用独立的HTML文件，避免字符串拼接
+  // 直接加载HTML文件，避免URL构造问题
   console.log('正在加载应用界面...');
 
-  const path = require('path');
+  const htmlPath = path.join(__dirname, 'index.html');
   const fs = require('fs');
 
-  // 读取HTML文件
-  const htmlPath = path.join(__dirname, 'index.html');
-  let simpleHTML;
-
-  try {
-    simpleHTML = fs.readFileSync(htmlPath, 'utf8');
-    console.log('成功加载HTML文件');
-  } catch (error) {
-    console.error('加载HTML文件失败，使用备用方案:', error);
-    simpleHTML = `
+  // 检查HTML文件是否存在
+  if (fs.existsSync(htmlPath)) {
+    console.log('HTML文件存在，直接加载:', htmlPath);
+    // 使用 file:// 协议直接加载HTML文件
+    mainWindow.loadFile(htmlPath);
+  } else {
+    console.error('HTML文件不存在，使用备用方案');
+    // 备用方案：使用内联HTML
+    const backupHTML = `
       <!DOCTYPE html>
       <html>
       <head>
         <title>PortMan - 端口管理工具</title>
-        <style>body { font-family: Arial; background: #667eea; color: white; padding: 20px; }</style>
+        <style>
+          body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+          }
+          h1 { margin-bottom: 20px; }
+          p { font-size: 16px; opacity: 0.9; }
+        </style>
       </head>
       <body>
-        <h1>PortMan - 端口管理工具</h1>
+        <h1>🚀 PortMan - 端口管理工具</h1>
         <p>HTML文件加载失败，请检查文件路径</p>
+        <p>文件路径: ${htmlPath}</p>
       </body>
       </html>
     `;
+    mainWindow.loadURL('data:text/html;charset=utf-8,' + encodeURIComponent(backupHTML));
   }
-
-  mainWindow.loadURL('data:text/html;charset=utf-8,' + encodeURIComponent(simpleHTML));
 
   // 总是打开开发者工具以便调试
   mainWindow.webContents.openDevTools();
