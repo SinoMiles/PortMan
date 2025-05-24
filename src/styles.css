@@ -290,6 +290,9 @@ body {
 
 .protocol-filter {
   cursor: pointer;
+  /* 优化下拉菜单性能 */
+  will-change: auto;
+  transform: translateZ(0); /* 启用硬件加速 */
 }
 
 .search-input:focus, .protocol-filter:focus {
@@ -302,6 +305,9 @@ body {
   background: white;
   color: #2c3e50;
   padding: 8px;
+  /* 优化选项渲染 */
+  will-change: auto;
+  transition: none; /* 移除过渡动画减少卡顿 */
 }
 
 /* 表格容器 */

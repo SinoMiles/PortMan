@@ -172,24 +172,36 @@ function displayPorts(ports) {
 function initializeInfiniteScroll() {
   const portList = document.getElementById('portList');
 
-  // 创建表格结构
-  let html = '<table class="table" id="portTable"><thead>';
-  html += '<tr><th>协议</th><th>本地地址</th><th>远程地址</th><th>状态</th><th>PID</th><th>进程名</th><th>操作</th></tr>';
-  html += '</thead><tbody id="portTableBody">';
-  html += '</tbody></table>';
-  html += '<div id="loadingIndicator" class="loading-indicator" style="display: none;">正在加载更多...</div>';
-  html += '<div class="stats" id="statsInfo">正在加载端口信息...</div>';
+  // 检查是否已经有表格结构，避免重复创建
+  let portTable = document.getElementById('portTable');
+  if (!portTable) {
+    // 创建表格结构
+    let html = '<table class="table" id="portTable"><thead>';
+    html += '<tr><th>协议</th><th>本地地址</th><th>远程地址</th><th>状态</th><th>PID</th><th>进程名</th><th>操作</th></tr>';
+    html += '</thead><tbody id="portTableBody">';
+    html += '</tbody></table>';
+    html += '<div id="loadingIndicator" class="loading-indicator" style="display: none;">正在加载更多...</div>';
+    html += '<div class="stats" id="statsInfo">正在加载端口信息...</div>';
 
-  portList.innerHTML = html;
+    portList.innerHTML = html;
+
+    // 添加滚动监听器（只添加一次）
+    const tableContainer = document.querySelector('.table-container');
+    if (tableContainer) {
+      // 移除之前的监听器，避免重复绑定
+      tableContainer.removeEventListener('scroll', handleScroll);
+      tableContainer.addEventListener('scroll', handleScroll);
+    }
+  } else {
+    // 如果表格已存在，只清空tbody
+    const tbody = document.getElementById('portTableBody');
+    if (tbody) {
+      tbody.innerHTML = '';
+    }
+  }
 
   // 加载初始数据
   loadMorePorts();
-
-  // 添加滚动监听器
-  const tableContainer = document.querySelector('.table-container');
-  if (tableContainer) {
-    tableContainer.addEventListener('scroll', handleScroll);
-  }
 }
 
 // 加载更多端口数据
@@ -310,6 +322,10 @@ function handleScroll() {
   }, 50); // 50ms 防抖延迟
 }
 
+// 缓存上次的过滤条件，避免重复计算
+let lastSearchTerm = '';
+let lastProtocolFilter = '';
+
 // 防抖函数，减少过滤频率
 let filterTimeout;
 function filterPorts() {
@@ -317,6 +333,17 @@ function filterPorts() {
   filterTimeout = setTimeout(() => {
     const searchTerm = document.getElementById('searchInput').value.toLowerCase();
     const protocolFilter = document.getElementById('protocolFilter').value;
+
+    // 如果过滤条件没有变化，直接返回
+    if (searchTerm === lastSearchTerm && protocolFilter === lastProtocolFilter) {
+      return;
+    }
+
+    // 更新缓存的过滤条件
+    lastSearchTerm = searchTerm;
+    lastProtocolFilter = protocolFilter;
+
+    console.log('执行过滤，搜索词:', searchTerm, '协议:', protocolFilter);
 
     // 如果没有过滤条件，直接使用原数据
     if (!searchTerm && !protocolFilter) {
@@ -355,7 +382,7 @@ function filterPorts() {
         portList.innerHTML = '<div class="empty">未找到匹配的端口</div>';
       }
     }
-  }, 150); // 150ms 防抖延迟
+  }, 50); // 进一步减少防抖延迟到50ms
 }
 
 async function killProcess(pid, processName) {
