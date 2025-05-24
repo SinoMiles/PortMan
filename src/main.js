@@ -25,7 +25,7 @@ function createWindow() {
     show: false,
     autoHideMenuBar: true, // 自动隐藏菜单栏
     menuBarVisible: false,  // 菜单栏不可见
-    backgroundColor: '#f093fb', // 设置背景色避免白屏闪烁
+    backgroundColor: '#667eea', // 设置背景色避免白屏闪烁
     webSecurity: false, // 允许加载本地资源
     titleBarOverlay: false // 禁用标题栏覆盖
   });
@@ -47,7 +47,7 @@ function createWindow() {
           }
           body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 50%, #4facfe 100%);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: #2c3e50;
             height: 100vh;
             overflow: hidden;
@@ -60,15 +60,13 @@ function createWindow() {
 
           /* 自定义标题栏样式 */
           .custom-titlebar {
-            background: rgba(255,255,255,0.95);
-            backdrop-filter: blur(20px);
+            background: transparent;
             height: 45px;
             display: flex;
             align-items: center;
             -webkit-app-region: drag; /* 允许拖拽窗口 */
             user-select: none;
-            border-bottom: 2px solid rgba(44, 62, 80, 0.1);
-            box-shadow: 0 2px 20px rgba(0,0,0,0.1);
+            padding-top: 8px;
           }
 
           .titlebar-content {
@@ -81,9 +79,9 @@ function createWindow() {
 
           .titlebar-title {
             font-size: 15px;
-            font-weight: 700;
-            color: #2c3e50;
-            text-shadow: 0 1px 2px rgba(255,255,255,0.8);
+            font-weight: 600;
+            color: rgba(255,255,255,0.95);
+            text-shadow: 0 1px 3px rgba(0,0,0,0.3);
           }
 
           .titlebar-controls {
@@ -92,47 +90,38 @@ function createWindow() {
           }
 
           .titlebar-btn {
-            width: 40px;
-            height: 32px;
+            width: 36px;
+            height: 30px;
             border: none;
-            background: rgba(44, 62, 80, 0.1);
-            color: #2c3e50;
+            background: rgba(255,255,255,0.15);
+            color: rgba(255,255,255,0.9);
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            border-radius: 8px;
-            margin-left: 6px;
-            border: 2px solid rgba(44, 62, 80, 0.2);
-            font-weight: 600;
+            transition: all 0.2s ease;
+            border-radius: 6px;
+            margin-left: 4px;
+            border: 1px solid rgba(255,255,255,0.2);
           }
 
           .titlebar-btn:hover {
-            background: rgba(44, 62, 80, 0.15);
-            transform: translateY(-2px) scale(1.05);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            background: rgba(255,255,255,0.25);
+            transform: translateY(-1px);
           }
 
           .close-btn:hover {
             background: #e74c3c !important;
             color: white;
             border-color: #e74c3c;
-            box-shadow: 0 4px 15px rgba(231, 76, 60, 0.4);
           }
 
           .minimize-btn:hover {
-            background: #3498db;
-            color: white;
-            border-color: #3498db;
-            box-shadow: 0 4px 15px rgba(52, 152, 219, 0.4);
+            background: rgba(255,255,255,0.3);
           }
 
           .maximize-btn:hover {
-            background: #2ecc71;
-            color: white;
-            border-color: #2ecc71;
-            box-shadow: 0 4px 15px rgba(46, 204, 113, 0.4);
+            background: rgba(255,255,255,0.3);
           }
 
           .main-content {
@@ -145,7 +134,7 @@ function createWindow() {
             backdrop-filter: blur(20px);
             border-radius: 16px;
             padding: 24px;
-            border: 2px solid rgba(44, 62, 80, 0.1);
+            border: 1px solid rgba(255,255,255,0.3);
             height: 100%;
             display: flex;
             flex-direction: column;
@@ -165,32 +154,29 @@ function createWindow() {
             gap: 8px;
           }
           .btn {
-            background: rgba(44, 62, 80, 0.1);
-            color: #2c3e50;
+            background: rgba(102, 126, 234, 0.1);
+            color: #667eea;
             border: none;
             padding: 10px 18px;
             border-radius: 10px;
             cursor: pointer;
             font-size: 14px;
             font-weight: 600;
-            border: 2px solid rgba(44, 62, 80, 0.2);
-            transition: all 0.3s ease;
+            border: 1px solid rgba(102, 126, 234, 0.3);
+            transition: all 0.2s ease;
           }
           .btn:hover {
-            background: rgba(44, 62, 80, 0.15);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            background: rgba(102, 126, 234, 0.2);
+            transform: translateY(-1px);
           }
           .btn-primary {
-            background: linear-gradient(135deg, #3498db, #2980b9);
+            background: linear-gradient(135deg, #667eea, #764ba2);
             color: white;
-            border: 2px solid #3498db;
-            box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
+            border: 1px solid #667eea;
           }
           .btn-primary:hover {
-            background: linear-gradient(135deg, #2980b9, #1f4e79);
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(52, 152, 219, 0.4);
+            background: linear-gradient(135deg, #5a6fd8, #6a4190);
+            transform: translateY(-1px);
           }
           .table-container {
             flex: 1;
@@ -210,11 +196,11 @@ function createWindow() {
             table-layout: fixed;
           }
           .table th {
-            background: linear-gradient(135deg, #3498db, #2980b9);
+            background: linear-gradient(135deg, #667eea, #764ba2);
             color: white;
             padding: 14px 12px;
-            border-bottom: 2px solid rgba(44, 62, 80, 0.1);
-            font-weight: 700;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+            font-weight: 600;
             text-align: left;
             position: sticky;
             top: 0;
@@ -232,7 +218,7 @@ function createWindow() {
             font-weight: 500;
           }
           .table tbody tr:hover td {
-            background: rgba(52, 152, 219, 0.1);
+            background: rgba(102, 126, 234, 0.1);
             transform: scale(1.01);
             box-shadow: 0 2px 8px rgba(0,0,0,0.1);
           }
@@ -258,27 +244,23 @@ function createWindow() {
           .status-listen {
             background: linear-gradient(135deg, #2ecc71, #27ae60);
             border-color: #2ecc71;
-            box-shadow: 0 2px 8px rgba(46, 204, 113, 0.3);
           }
           .status-established {
-            background: linear-gradient(135deg, #3498db, #2980b9);
-            border-color: #3498db;
-            box-shadow: 0 2px 8px rgba(52, 152, 219, 0.3);
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-color: #667eea;
           }
           .status-other {
             background: linear-gradient(135deg, #f39c12, #e67e22);
             border-color: #f39c12;
-            box-shadow: 0 2px 8px rgba(243, 156, 18, 0.3);
           }
           .protocol-tag {
-            background: linear-gradient(135deg, #9b59b6, #8e44ad);
+            background: linear-gradient(135deg, #667eea, #764ba2);
             color: white;
             padding: 6px 12px;
             border-radius: 8px;
             font-size: 12px;
-            font-weight: 700;
-            border: 2px solid #9b59b6;
-            box-shadow: 0 2px 8px rgba(155, 89, 182, 0.3);
+            font-weight: 600;
+            border: 1px solid #667eea;
             text-shadow: 0 1px 2px rgba(0,0,0,0.2);
           }
           .loading {
@@ -352,28 +334,28 @@ function createWindow() {
                 <div style="display: flex; gap: 12px; align-items: center;">
                   <input type="text" id="searchInput" placeholder="搜索端口、进程..." style="
                     background: rgba(255,255,255,0.9);
-                    border: 2px solid rgba(44, 62, 80, 0.2);
+                    border: 1px solid rgba(102, 126, 234, 0.3);
                     color: #2c3e50;
                     padding: 10px 16px;
-                    border-radius: 10px;
+                    border-radius: 8px;
                     font-size: 14px;
                     font-weight: 500;
                     width: 240px;
                     box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-                    transition: all 0.3s ease;
-                  " onkeyup="filterPorts()" onfocus="this.style.borderColor='#3498db'; this.style.boxShadow='0 4px 12px rgba(52, 152, 219, 0.3)'" onblur="this.style.borderColor='rgba(44, 62, 80, 0.2)'; this.style.boxShadow='0 2px 8px rgba(0,0,0,0.1)'">
+                    transition: all 0.2s ease;
+                  " onkeyup="filterPorts()" onfocus="this.style.borderColor='#667eea'; this.style.boxShadow='0 4px 12px rgba(102, 126, 234, 0.2)'" onblur="this.style.borderColor='rgba(102, 126, 234, 0.3)'; this.style.boxShadow='0 2px 8px rgba(0,0,0,0.1)'">
                   <select id="protocolFilter" style="
                     background: rgba(255,255,255,0.9);
-                    border: 2px solid rgba(44, 62, 80, 0.2);
+                    border: 1px solid rgba(102, 126, 234, 0.3);
                     color: #2c3e50;
                     padding: 10px 16px;
-                    border-radius: 10px;
+                    border-radius: 8px;
                     font-size: 14px;
                     font-weight: 500;
                     cursor: pointer;
                     box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-                    transition: all 0.3s ease;
-                  " onchange="filterPorts()" onfocus="this.style.borderColor='#3498db'; this.style.boxShadow='0 4px 12px rgba(52, 152, 219, 0.3)'" onblur="this.style.borderColor='rgba(44, 62, 80, 0.2)'; this.style.boxShadow='0 2px 8px rgba(0,0,0,0.1)'">
+                    transition: all 0.2s ease;
+                  " onchange="filterPorts()" onfocus="this.style.borderColor='#667eea'; this.style.boxShadow='0 4px 12px rgba(102, 126, 234, 0.2)'" onblur="this.style.borderColor='rgba(102, 126, 234, 0.3)'; this.style.boxShadow='0 2px 8px rgba(0,0,0,0.1)'">
                     <option value="" style="background: white; color: #2c3e50; padding: 8px;">所有协议</option>
                     <option value="TCP" style="background: white; color: #2c3e50; padding: 8px;">TCP</option>
                     <option value="UDP" style="background: white; color: #2c3e50; padding: 8px;">UDP</option>
