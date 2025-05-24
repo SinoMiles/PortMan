@@ -81,13 +81,10 @@ function createWindow() {
 
           ::-webkit-scrollbar-thumb:hover {
             background: linear-gradient(135deg, rgba(102, 126, 234, 0.9), rgba(118, 75, 162, 0.9));
-            transform: scale(1.1);
-            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
           }
 
           ::-webkit-scrollbar-thumb:active {
             background: linear-gradient(135deg, #667eea, #764ba2);
-            transform: scale(1.05);
           }
 
           ::-webkit-scrollbar-corner {
@@ -119,8 +116,6 @@ function createWindow() {
 
           .table-container::-webkit-scrollbar-thumb:hover {
             background: linear-gradient(135deg, #667eea, #764ba2);
-            transform: scale(1.05);
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
           }
 
 
@@ -179,7 +174,6 @@ function createWindow() {
 
           .titlebar-btn:hover {
             background: rgba(255,255,255,0.25);
-            transform: translateY(-1px);
           }
 
           .close-btn:hover {
@@ -222,8 +216,6 @@ function createWindow() {
 
           .main-content::-webkit-scrollbar-thumb:hover {
             background: linear-gradient(135deg, rgba(102, 126, 234, 0.8), rgba(118, 75, 162, 0.8));
-            transform: scale(1.1);
-            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
           }
           .card {
             background: rgba(255,255,255,0.95);
@@ -263,7 +255,6 @@ function createWindow() {
           }
           .btn:hover {
             background: rgba(102, 126, 234, 0.2);
-            transform: translateY(-1px);
           }
           .btn-primary {
             background: linear-gradient(135deg, #667eea, #764ba2);
@@ -272,7 +263,6 @@ function createWindow() {
           }
           .btn-primary:hover {
             background: linear-gradient(135deg, #5a6fd8, #6a4190);
-            transform: translateY(-1px);
           }
           .table-container {
             flex: 1;
@@ -280,10 +270,11 @@ function createWindow() {
             overflow-x: hidden; /* 禁用横向滚动 */
             border-radius: 12px;
             border: 2px solid rgba(44, 62, 80, 0.1);
-            /* 性能优化 - 简化滚动 */
-            contain: layout style paint;
-            transform: translate3d(0,0,0);
             background: rgba(255,255,255,0.8);
+            /* 性能优化 */
+            will-change: scroll-position;
+            contain: layout style paint;
+            transform: translateZ(0); /* 启用硬件加速 */
           }
           .table {
             width: 100%;
@@ -315,9 +306,7 @@ function createWindow() {
             font-weight: 500;
           }
           .table tbody tr:hover td {
-            background: rgba(102, 126, 234, 0.1);
-            transform: scale(1.01);
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            background: rgba(102, 126, 234, 0.15);
           }
           /* 列宽优化 */
           .table th:nth-child(1), .table td:nth-child(1) { width: 8%; }
@@ -529,7 +518,7 @@ function createWindow() {
           let allPorts = [];
           let filteredPorts = [];
           let currentPage = 0;
-          const itemsPerPage = 25; // 每页显示25条记录，提升滑动性能
+          const itemsPerPage = 50; // 增加每页显示数量，减少分页操作
 
           function displayPorts(ports) {
             const portList = document.getElementById('portList');
@@ -551,47 +540,49 @@ function createWindow() {
             const endIndex = Math.min(startIndex + itemsPerPage, filteredPorts.length);
             const currentPorts = filteredPorts.slice(startIndex, endIndex);
 
-            // 使用更简单的渲染方式
+            // 使用字符串拼接，避免模板字符串的性能开销
             let html = '<table class="table"><thead>';
             html += '<tr><th>协议</th><th>本地地址</th><th>远程地址</th><th>状态</th><th>PID</th><th>进程名</th><th>操作</th></tr>';
             html += '</thead><tbody>';
 
-            // 简化渲染逻辑
+            // 批量处理，减少字符串拼接次数
+            const rows = [];
             for (let i = 0; i < currentPorts.length; i++) {
               const port = currentPorts[i];
               const statusClass = port.state.toUpperCase() === 'LISTEN' ? 'status-listen' :
                                  port.state.toUpperCase() === 'ESTABLISHED' ? 'status-established' : 'status-other';
 
-              html += '<tr>';
-              html += \`<td><span class="protocol-tag">\${port.protocol}</span></td>\`;
-              html += \`<td>\${port.localAddress}</td>\`;
-              html += \`<td>\${port.remoteAddress || '-'}</td>\`;
-              html += \`<td><span class="status \${statusClass}">\${port.state}</span></td>\`;
-              html += \`<td>\${port.pid}</td>\`;
-              html += \`<td>\${port.processName || '-'}</td>\`;
-              html += '<td>';
-              if (port.pid !== '-' && port.pid !== '0') {
-                html += \`<button onclick="killProcess('\${port.pid}', '\${port.processName}')" class="btn" style="background: #f44336; padding: 4px 8px; font-size: 11px;">终止</button>\`;
-              } else {
-                html += '-';
-              }
-              html += '</td>';
-              html += '</tr>';
+              const actionBtn = (port.pid !== '-' && port.pid !== '0') ?
+                '<button onclick="killProcess(\'' + port.pid + '\', \'' + (port.processName || '').replace(/'/g, '') + '\')" class="btn" style="background: #f44336; padding: 4px 8px; font-size: 11px;">终止</button>' :
+                '-';
+
+              rows.push(
+                '<tr>' +
+                '<td><span class="protocol-tag">' + port.protocol + '</span></td>' +
+                '<td>' + port.localAddress + '</td>' +
+                '<td>' + (port.remoteAddress || '-') + '</td>' +
+                '<td><span class="status ' + statusClass + '">' + port.state + '</span></td>' +
+                '<td>' + port.pid + '</td>' +
+                '<td>' + (port.processName || '-') + '</td>' +
+                '<td>' + actionBtn + '</td>' +
+                '</tr>'
+              );
             }
 
+            html += rows.join('');
             html += '</tbody></table>';
 
             // 分页控制
             const totalPages = Math.ceil(filteredPorts.length / itemsPerPage);
             if (totalPages > 1) {
               html += '<div class="pagination" style="text-align: center; margin-top: 15px;">';
-              html += \`<button onclick="changePage(-1)" \${currentPage === 0 ? 'disabled' : ''} class="btn" style="margin: 0 5px;">上一页</button>\`;
-              html += \`<span style="margin: 0 10px;">第 \${currentPage + 1} 页 / 共 \${totalPages} 页</span>\`;
-              html += \`<button onclick="changePage(1)" \${currentPage === totalPages - 1 ? 'disabled' : ''} class="btn" style="margin: 0 5px;">下一页</button>\`;
+              html += '<button onclick="changePage(-1)" ' + (currentPage === 0 ? 'disabled' : '') + ' class="btn" style="margin: 0 5px;">上一页</button>';
+              html += '<span style="margin: 0 10px;">第 ' + (currentPage + 1) + ' 页 / 共 ' + totalPages + ' 页</span>';
+              html += '<button onclick="changePage(1)" ' + (currentPage === totalPages - 1 ? 'disabled' : '') + ' class="btn" style="margin: 0 5px;">下一页</button>';
               html += '</div>';
             }
 
-            html += \`<div class="stats">显示 \${startIndex + 1}-\${endIndex} 条，共 \${filteredPorts.length} 个活跃端口</div>\`;
+            html += '<div class="stats">显示 ' + (startIndex + 1) + '-' + endIndex + ' 条，共 ' + filteredPorts.length + ' 个活跃端口</div>';
 
             // 一次性更新 DOM
             portList.innerHTML = html;
@@ -605,29 +596,44 @@ function createWindow() {
             renderPortTable();
           }
 
+          // 防抖函数，减少过滤频率
+          let filterTimeout;
           function filterPorts() {
-            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-            const protocolFilter = document.getElementById('protocolFilter').value;
+            clearTimeout(filterTimeout);
+            filterTimeout = setTimeout(() => {
+              const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+              const protocolFilter = document.getElementById('protocolFilter').value;
 
-            filteredPorts = allPorts.filter(port => {
-              const matchesSearch = !searchTerm ||
-                port.localAddress.toLowerCase().includes(searchTerm) ||
-                port.remoteAddress.toLowerCase().includes(searchTerm) ||
-                port.processName.toLowerCase().includes(searchTerm) ||
-                port.pid.toString().includes(searchTerm) ||
-                port.state.toLowerCase().includes(searchTerm);
+              // 如果没有过滤条件，直接使用原数据
+              if (!searchTerm && !protocolFilter) {
+                filteredPorts = allPorts;
+              } else {
+                filteredPorts = allPorts.filter(port => {
+                  // 优化搜索逻辑，减少字符串操作
+                  let matchesSearch = true;
+                  if (searchTerm) {
+                    const searchFields = [
+                      port.localAddress,
+                      port.remoteAddress || '',
+                      port.processName || '',
+                      port.pid.toString(),
+                      port.state
+                    ].join(' ').toLowerCase();
+                    matchesSearch = searchFields.includes(searchTerm);
+                  }
 
-              const matchesProtocol = !protocolFilter || port.protocol === protocolFilter;
+                  const matchesProtocol = !protocolFilter || port.protocol === protocolFilter;
+                  return matchesSearch && matchesProtocol;
+                });
+              }
 
-              return matchesSearch && matchesProtocol;
-            });
-
-            currentPage = 0; // 重置到第一页
-            renderPortTable();
+              currentPage = 0; // 重置到第一页
+              renderPortTable();
+            }, 150); // 150ms 防抖延迟
           }
 
           async function killProcess(pid, processName) {
-            if (confirm(\`确定要终止进程 \${processName} (PID: \${pid}) 吗？\`)) {
+            if (confirm('确定要终止进程 ' + processName + ' (PID: ' + pid + ') 吗？')) {
               try {
                 const result = await window.electronAPI.killProcess(pid);
                 if (result.success) {
@@ -653,23 +659,10 @@ function createWindow() {
 
   // 优化窗口显示时机，减少闪烁
   mainWindow.webContents.once('dom-ready', () => {
-    // DOM 准备就绪后稍微延迟显示，确保样式完全加载
+    // DOM 准备就绪后直接显示，避免复杂动画
     setTimeout(() => {
-      // 添加平滑显示效果
-      mainWindow.setOpacity(0);
       mainWindow.show();
-
-      // 淡入动画
-      let opacity = 0;
-      const fadeIn = setInterval(() => {
-        opacity += 0.05;
-        mainWindow.setOpacity(opacity);
-        if (opacity >= 1) {
-          clearInterval(fadeIn);
-          mainWindow.setOpacity(1); // 确保完全不透明
-        }
-      }, 16); // 约60fps
-    }, 200); // 延迟200ms确保样式加载完成
+    }, 100); // 减少延迟时间
   });
 
   mainWindow.on('closed', () => {
