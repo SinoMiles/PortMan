@@ -464,3 +464,54 @@ body {
   padding: 10px;
   border-radius: 8px;
 }
+
+/* 无限滚动相关样式 */
+.loading-indicator {
+  text-align: center;
+  padding: 20px;
+  font-size: 14px;
+  color: #667eea;
+  font-weight: 600;
+  background: rgba(102, 126, 234, 0.1);
+  border-radius: 8px;
+  margin: 10px;
+  border: 1px solid rgba(102, 126, 234, 0.2);
+}
+
+/* 行淡入动画 */
+@keyframes fadeInRow {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.port-row {
+  animation: fadeInRow 0.3s ease forwards;
+}
+
+/* 加载指示器动画 */
+@keyframes pulse {
+  0% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.6;
+  }
+}
+
+.loading-indicator {
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+/* 滚动条在无限滚动时的优化 */
+.table-container {
+  scroll-behavior: smooth;
+}

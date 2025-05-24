@@ -116,8 +116,10 @@ async function refreshPorts() {
 // 全局变量存储端口数据
 let allPorts = [];
 let filteredPorts = [];
-let currentPage = 0;
-const itemsPerPage = 50;
+let displayedPorts = []; // 当前显示的端口
+let currentIndex = 0; // 当前加载到的索引
+const itemsPerLoad = 25; // 每次加载的数量
+let isLoading = false; // 防止重复加载
 
 function displayPorts(ports) {
   console.log('=== displayPorts 函数开始执行 ===');
@@ -135,6 +137,8 @@ function displayPorts(ports) {
 
     allPorts = ports;
     filteredPorts = ports;
+    displayedPorts = []; // 重置显示的端口
+    currentIndex = 0; // 重置索引
     console.log('已设置全局变量，端口数量:', ports.length);
 
     if (ports.length === 0) {
@@ -143,9 +147,9 @@ function displayPorts(ports) {
       return;
     }
 
-    console.log('开始渲染端口表格...');
-    renderPortTable();
-    console.log('端口表格渲染完成');
+    console.log('开始初始化无限滚动表格...');
+    initializeInfiniteScroll();
+    console.log('无限滚动表格初始化完成');
 
   } catch (error) {
     console.error('=== displayPorts 函数发生错误 ===');
@@ -164,21 +168,74 @@ function displayPorts(ports) {
   console.log('=== displayPorts 函数执行结束 ===');
 }
 
-function renderPortTable() {
+// 初始化无限滚动
+function initializeInfiniteScroll() {
   const portList = document.getElementById('portList');
-  const startIndex = currentPage * itemsPerPage;
-  const endIndex = Math.min(startIndex + itemsPerPage, filteredPorts.length);
-  const currentPorts = filteredPorts.slice(startIndex, endIndex);
 
-  // 使用字符串拼接，避免模板字符串的性能开销
-  let html = '<table class="table"><thead>';
+  // 创建表格结构
+  let html = '<table class="table" id="portTable"><thead>';
   html += '<tr><th>协议</th><th>本地地址</th><th>远程地址</th><th>状态</th><th>PID</th><th>进程名</th><th>操作</th></tr>';
-  html += '</thead><tbody>';
+  html += '</thead><tbody id="portTableBody">';
+  html += '</tbody></table>';
+  html += '<div id="loadingIndicator" class="loading-indicator" style="display: none;">正在加载更多...</div>';
+  html += '<div class="stats" id="statsInfo">正在加载端口信息...</div>';
 
-  // 批量处理，减少字符串拼接次数
+  portList.innerHTML = html;
+
+  // 加载初始数据
+  loadMorePorts();
+
+  // 添加滚动监听器
+  const tableContainer = document.querySelector('.table-container');
+  if (tableContainer) {
+    tableContainer.addEventListener('scroll', handleScroll);
+  }
+}
+
+// 加载更多端口数据
+function loadMorePorts() {
+  if (isLoading || currentIndex >= filteredPorts.length) {
+    return;
+  }
+
+  isLoading = true;
+  const loadingIndicator = document.getElementById('loadingIndicator');
+  if (loadingIndicator) {
+    loadingIndicator.style.display = 'block';
+  }
+
+  // 模拟异步加载延迟
+  setTimeout(() => {
+    const endIndex = Math.min(currentIndex + itemsPerLoad, filteredPorts.length);
+    const newPorts = filteredPorts.slice(currentIndex, endIndex);
+
+    // 添加新端口到显示列表
+    displayedPorts = displayedPorts.concat(newPorts);
+    currentIndex = endIndex;
+
+    // 渲染新的行
+    renderNewRows(newPorts);
+
+    // 更新统计信息
+    updateStats();
+
+    isLoading = false;
+    if (loadingIndicator) {
+      loadingIndicator.style.display = 'none';
+    }
+
+    console.log('加载了', newPorts.length, '个端口，当前总数:', displayedPorts.length);
+  }, 200); // 200ms 延迟，提供更好的用户体验
+}
+
+// 渲染新的表格行
+function renderNewRows(ports) {
+  const tbody = document.getElementById('portTableBody');
+  if (!tbody) return;
+
   const rows = [];
-  for (let i = 0; i < currentPorts.length; i++) {
-    const port = currentPorts[i];
+  for (let i = 0; i < ports.length; i++) {
+    const port = ports[i];
     const statusClass = port.state.toUpperCase() === 'LISTEN' ? 'status-listen' :
                        port.state.toUpperCase() === 'ESTABLISHED' ? 'status-established' : 'status-other';
 
@@ -187,7 +244,7 @@ function renderPortTable() {
       '<span style="color: #bdc3c7; font-style: italic;">-</span>';
 
     rows.push(
-      '<tr>' +
+      '<tr class="port-row" style="opacity: 0; animation: fadeInRow 0.3s ease forwards; animation-delay: ' + (i * 50) + 'ms;">' +
       '<td><span class="protocol-tag">' + port.protocol + '</span></td>' +
       '<td>' + port.localAddress + '</td>' +
       '<td>' + (port.remoteAddress || '-') + '</td>' +
@@ -199,31 +256,35 @@ function renderPortTable() {
     );
   }
 
-  html += rows.join('');
-  html += '</tbody></table>';
-
-  // 分页控制
-  const totalPages = Math.ceil(filteredPorts.length / itemsPerPage);
-  if (totalPages > 1) {
-    html += '<div class="pagination" style="text-align: center; margin-top: 15px;">';
-    html += '<button onclick="changePage(-1)" ' + (currentPage === 0 ? 'disabled' : '') + ' class="btn" style="margin: 0 5px;">上一页</button>';
-    html += '<span style="margin: 0 10px;">第 ' + (currentPage + 1) + ' 页 / 共 ' + totalPages + ' 页</span>';
-    html += '<button onclick="changePage(1)" ' + (currentPage === totalPages - 1 ? 'disabled' : '') + ' class="btn" style="margin: 0 5px;">下一页</button>';
-    html += '</div>';
-  }
-
-  html += '<div class="stats">显示 ' + (startIndex + 1) + '-' + endIndex + ' 条，共 ' + filteredPorts.length + ' 个活跃端口</div>';
-
-  // 一次性更新 DOM
-  portList.innerHTML = html;
+  tbody.innerHTML += rows.join('');
 }
 
-function changePage(direction) {
-  const totalPages = Math.ceil(filteredPorts.length / itemsPerPage);
-  currentPage += direction;
-  if (currentPage < 0) currentPage = 0;
-  if (currentPage >= totalPages) currentPage = totalPages - 1;
-  renderPortTable();
+// 更新统计信息
+function updateStats() {
+  const statsInfo = document.getElementById('statsInfo');
+  if (statsInfo) {
+    const remaining = filteredPorts.length - currentIndex;
+    let text = '已显示 ' + displayedPorts.length + ' 条，共 ' + filteredPorts.length + ' 个活跃端口';
+    if (remaining > 0) {
+      text += ' (还有 ' + remaining + ' 条)';
+    }
+    statsInfo.textContent = text;
+  }
+}
+
+// 处理滚动事件
+function handleScroll() {
+  const tableContainer = document.querySelector('.table-container');
+  if (!tableContainer) return;
+
+  const scrollTop = tableContainer.scrollTop;
+  const scrollHeight = tableContainer.scrollHeight;
+  const clientHeight = tableContainer.clientHeight;
+
+  // 当滚动到底部附近时加载更多数据
+  if (scrollTop + clientHeight >= scrollHeight - 100) {
+    loadMorePorts();
+  }
 }
 
 // 防抖函数，减少过滤频率
@@ -257,8 +318,20 @@ function filterPorts() {
       });
     }
 
-    currentPage = 0; // 重置到第一页
-    renderPortTable();
+    // 重置无限滚动状态
+    displayedPorts = [];
+    currentIndex = 0;
+    isLoading = false;
+
+    // 重新初始化无限滚动
+    if (filteredPorts.length > 0) {
+      initializeInfiniteScroll();
+    } else {
+      const portList = document.getElementById('portList');
+      if (portList) {
+        portList.innerHTML = '<div class="empty">未找到匹配的端口</div>';
+      }
+    }
   }, 150); // 150ms 防抖延迟
 }
 
