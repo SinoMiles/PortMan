@@ -1,0 +1,27 @@
+<svg width="256" height="256" viewBox="0 0 256 256" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#667eea;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#764ba2;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Background circle -->
+  <circle cx="128" cy="128" r="120" fill="url(#gradient)" stroke="#ffffff" stroke-width="4"/>
+  
+  <!-- Port icon -->
+  <rect x="80" y="80" width="96" height="96" rx="12" fill="#ffffff" opacity="0.9"/>
+  
+  <!-- Connection lines -->
+  <line x1="60" y1="128" x2="80" y2="128" stroke="#ffffff" stroke-width="6" stroke-linecap="round"/>
+  <line x1="176" y1="128" x2="196" y2="128" stroke="#ffffff" stroke-width="6" stroke-linecap="round"/>
+  
+  <!-- Port holes -->
+  <circle cx="104" cy="104" r="8" fill="url(#gradient)"/>
+  <circle cx="152" cy="104" r="8" fill="url(#gradient)"/>
+  <circle cx="104" cy="152" r="8" fill="url(#gradient)"/>
+  <circle cx="152" cy="152" r="8" fill="url(#gradient)"/>
+  
+  <!-- Center connection -->
+  <circle cx="128" cy="128" r="12" fill="url(#gradient)"/>
+</svg>
