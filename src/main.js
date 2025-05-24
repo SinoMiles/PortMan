@@ -60,13 +60,13 @@ function createWindow() {
 
           /* 自定义标题栏样式 */
           .custom-titlebar {
-            background: rgba(255,255,255,0.2);
-            height: 32px;
+            background: transparent;
+            height: 40px;
             display: flex;
             align-items: center;
             -webkit-app-region: drag; /* 允许拖拽窗口 */
             user-select: none;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
+            padding-top: 8px;
           }
 
           .titlebar-content {
@@ -89,54 +89,40 @@ function createWindow() {
           }
 
           .titlebar-btn {
-            width: 32px;
-            height: 32px;
+            width: 36px;
+            height: 28px;
             border: none;
-            background: transparent;
-            color: rgba(255,255,255,0.8);
+            background: rgba(255,255,255,0.1);
+            color: rgba(255,255,255,0.9);
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: background-color 0.2s ease;
+            transition: all 0.2s ease;
+            border-radius: 6px;
+            margin-left: 4px;
+            border: 1px solid rgba(255,255,255,0.2);
           }
 
           .titlebar-btn:hover {
-            background: rgba(255,255,255,0.1);
+            background: rgba(255,255,255,0.2);
+            transform: translateY(-1px);
           }
 
           .close-btn:hover {
             background: #e74c3c !important;
             color: white;
+            border-color: #e74c3c;
           }
 
           .minimize-btn:hover {
-            background: rgba(255,255,255,0.15);
+            background: rgba(255,255,255,0.25);
           }
 
           .maximize-btn:hover {
-            background: rgba(255,255,255,0.15);
+            background: rgba(255,255,255,0.25);
           }
-          .header {
-            background: rgba(255,255,255,0.15);
-            border-bottom: 1px solid rgba(255,255,255,0.2);
-            padding: 15px 20px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-          }
-          .title {
-            font-size: 1.4em;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-          }
-          .header-actions {
-            display: flex;
-            gap: 10px;
-            align-items: center;
-          }
+
           .main-content {
             flex: 1;
             padding: 20px;
@@ -298,14 +284,6 @@ function createWindow() {
             </div>
           </div>
 
-          <div class="header">
-            <div class="title">
-              🔌 端口管理
-            </div>
-            <div class="header-actions">
-              <button onclick="refreshPorts()" class="btn btn-primary">🔄 刷新</button>
-            </div>
-          </div>
           <div class="main-content">
             <div class="card">
               <div class="card-header">
@@ -334,6 +312,7 @@ function createWindow() {
                     <option value="TCP">TCP</option>
                     <option value="UDP">UDP</option>
                   </select>
+                  <button onclick="refreshPorts()" class="btn btn-primary">🔄 刷新</button>
                 </div>
               </div>
               <div class="table-container">
