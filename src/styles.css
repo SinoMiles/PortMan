@@ -145,7 +145,7 @@ body {
 /* 主内容区域 */
 .main-content {
   flex: 1;
-  padding: 15px 20px 20px 20px; /* 减少顶部padding */
+  padding: 8px 20px 20px 20px; /* 进一步减少顶部padding */
   overflow-y: auto;
 }
 
@@ -176,7 +176,7 @@ body {
   background: rgba(255,255,255,0.95);
   backdrop-filter: blur(20px);
   border-radius: 16px;
-  padding: 18px; /* 减少内边距 */
+  padding: 12px 18px 18px 18px; /* 减少顶部内边距 */
   border: 1px solid rgba(255,255,255,0.3);
   height: 100%;
   display: flex;
@@ -295,7 +295,7 @@ body {
   border: 2px solid rgba(44, 62, 80, 0.1);
   background: rgba(255,255,255,0.8);
   /* 修复滚动问题 */
-  max-height: calc(100vh - 160px); /* 增加可用高度 */
+  max-height: calc(100vh - 140px); /* 进一步增加可用高度 */
   min-height: 500px; /* 增加最小高度 */
   /* 性能优化 */
   will-change: scroll-position;
