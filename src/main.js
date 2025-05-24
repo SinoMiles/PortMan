@@ -10,10 +10,10 @@ function createWindow() {
   Menu.setApplicationMenu(null);
 
   mainWindow = new BrowserWindow({
-    width: 900,
-    height: 650,
-    minWidth: 700,
-    minHeight: 500,
+    width: 1100,
+    height: 750,
+    minWidth: 900,
+    minHeight: 600,
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,
@@ -46,7 +46,7 @@ function createWindow() {
     // 使用 file:// 协议直接加载HTML文件
     mainWindow.loadFile(htmlPath);
   } else {
-    console.error('HTML文件不存在，使用备用方案');
+    console.error('HTML文件不存在，使用备用方案');/*  */
     // 备用方案：使用内联HTML
     const backupHTML = `
       <!DOCTYPE html>
